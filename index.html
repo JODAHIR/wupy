@@ -22,6 +22,21 @@
       max-width: 900px;
       margin: auto;
     }
+    // Class
+.visible {
+  visibility: visible;
+}
+.invisible {
+  visibility: hidden;
+}
+
+// Usage as a mixin
+.element {
+  @include invisible(visible);
+}
+.element {
+  @include invisible(hidden);
+}
     input, select, button, textarea {
       width: 100%;
       padding: 0.5rem;
@@ -173,7 +188,8 @@
       <option value="otros">💊 Farmacia</option>
       </select>
     </div>
-
+        <button class="btn btn-outline-secondary me-2 w-50" onclick="exportarCSV()">Exportar CSV</button>
+        <input type="date" id="filtroFecha" class="invisible" onchange="mostrarGastos()">
     <div class="summary" id="resumen"></div>
 
     <table class="table" id="tablaGastos"></table>
@@ -277,11 +293,12 @@ function mostrarToast(mensaje, color = '#333') {
     function mostrarGastos() {
       const filtroTexto = document.getElementById('filtroTexto').value.toLowerCase();
       const filtroCategoria = document.getElementById('filtroCategoria').value;
-
+      const filtroFecha = document.getElementById('filtroFecha').value;
 
       let filtrados = gastos.filter((g, index) => {
         const coincideTexto = g.lugar.toLowerCase().includes(filtroTexto) || (g.nota || '').toLowerCase().includes(filtroTexto);
         const coincideCategoria = !filtroCategoria || g.categoria === filtroCategoria;
+                const coincideFecha = !filtroFecha || g.fecha.startsWith(filtroFecha);
         g._index = index; // Para saber qué índice tiene
         return coincideTexto && coincideCategoria && coincideFecha;
       });
@@ -489,7 +506,18 @@ function mostrarToast(mensaje, color = '#333') {
     toast.style.visibility = 'hidden';
   }, 3000);
 }
-
+function exportarCSV() {
+  const encabezado = ["Lugar", "Categoría", "Fecha", "Monto", "Descuento", "Total"];
+  const rows = gastos.map(g => [g.lugar, g.categoria, g.fecha, g.monto, g.descuento, g.monto - g.descuento]);
+  let csv = encabezado.join(",") + "\n" + rows.map(r => r.join(",")).join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
+  link.setAttribute("href", URL.createObjectURL(blob));
+  link.setAttribute("download", `gastos_${new Date().toISOString().slice(0,7)}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
   </script>
 
 <div id="toast" style="
@@ -512,4 +540,3 @@ function mostrarToast(mensaje, color = '#333') {
 
 </body>
 </html>
-
