@@ -13,11 +13,9 @@
 </head>
 <body class="bg-light">
   <header class="bg-success text-white text-center py-3 mb-3 shadow-sm">
-    <h3>📊 Control de Gastos - <span id="mesActual"></span></h3>
+    <h3>📊 Gastos WUPY's- <span id="mesActual"></span></h3>
   </header>
-
   <div class="container">
-
     <!-- Formulario de Gasto -->
     <form id="formGasto" class="card shadow-sm mb-4" onsubmit="agregarGasto(); return false;">
       <div class="card-body">
@@ -92,7 +90,7 @@
         <input type="file" class="form-control w-100" id="inputCSV" accept=".csv">
       </div>
     </div>
-
+    <hr>
     <!-- Resumen por categoría -->
     <div class="row" id="resumen"></div>
 
@@ -116,7 +114,7 @@
       fiesta: 1000000,
       ocio: 1000000,
       otros: 1000000,
-      monchis: 1000000,
+      monchis: 500000,
       biggie: 1000000
     };
 
@@ -163,7 +161,7 @@
 
       tabla.innerHTML = `
         <thead><tr>
-          <th>Fecha</th><th>Categoría</th><th>Lugar</th><th>Monto</th><th>Descuento (%)</th><th>Desc. (Gs)</th><th>Total</th><th>Nota</th>
+          <th>Fecha</th><th>Categoría</th><th>Lugar</th><th>Monto</th><th>Des (%)</th><th>Reintegro (Gs)</th><th>A pagar</th><th>Nota</th>
         </tr></thead><tbody>
         ${filtrados.map(g => `
           <tr>
