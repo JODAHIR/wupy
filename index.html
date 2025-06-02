@@ -1,346 +1,113 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<head>
   <meta charset="UTF-8" />
-  <meta name="author" content="JCODAHIR">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <meta content="WUPY" name="description">
+  <meta content="WUPY" name="description">
   <title>WUPY-JO</title>
+  <meta name="author" content="JCODAHIR">
+    <link href="favicon.ico" rel="icon">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body {
-      font-family: sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f5f5f5;
-    }
-    header {
-      background-color: #4CAF50;
-      color: white;
-      text-align: center;
-      padding: 1rem;
-    }
-    .container {
-      padding: 1rem;
-      max-width: 900px;
-      margin: auto;
-    }
-
-.visible {
-  visibility: visible;
-}
-.invisible {
-  visibility: hidden;
-}
-
-// Usage as a mixin
-.element {
-  @include invisible(visible);
-}
-.element {
-  @include invisible(hidden);
-}
-    input, select, button, textarea {
-      width: 100%;
-      padding: 0.5rem;
-      margin: 0.5rem 0;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-    }
-    .table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1rem;
-    }
-    .table th, .table td {
-      border: 1px solid #ddd;
-      padding: 0.5rem;
-      text-align: center;
-    }
-    .table th {
-      background-color: #eee;
-    }
-    .summary {
-      margin-top: 1rem;
-      background-color: #fff;
-      padding: 1rem;
-      border-radius: 8px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-    }
-    .chart {
-      margin: 2rem 0;
-      text-align: center;
-    }
-    @media (max-width: 600px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
-    }
-    form {
-  background-color: white;
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  margin-bottom: 2rem;
-}
-
-.form-section {
-  margin-bottom: 1rem;
-      margin-right: 20px;
-}
-
-.form-section label {
-  font-weight: bold;
-  display: block;
-  margin-bottom: 0.3rem;
-  color: #333;
-}
-
-.form-buttons {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.form-buttons button {
-  flex: 1;
-  padding: 0.7rem;
-  font-size: 1rem;
-  cursor: pointer;
-  border: none;
-  background-color: #4CAF50;
-  color: white;
-  border-radius: 5px;
-  transition: background-color 0.2s;
-}
-
-.form-buttons button:hover {
-  background-color: #45a049;
-}
-
-#resumen h3 {
-  color: #333;
-  font-size: 1.4rem;
-}
-  </style>
-</head>
-<body>
-  <header>
-    <h3>Gastos - <span id="mesActual"></span></h3>
-
-  </header>
-  <div class="container">
-  
-<form id="formGasto" style="border: 2px solid #4CAF50; background: linear-gradient(to right, #ffffff, #e8f5e9);"  class="animate__animated animate__fadeIn" onsubmit="agregarGasto(); return false;">
-  <div class="form-section">
-    <label>📂 Categoría</label>
-    <select id="categoria" required>
-      <option value="combustible">⛽️ Combustible</option>
-      <option value="supermercado">🛒 Supermercado</option>
-      <option value="comida">🍽️ Comida</option>
-      <option value="fiesta">🎉 Fiesta</option>
-      <option value="ocio">🎟️ Entradas</option>
-      <option value="otros">💊 Farmacia</option>
-      <option value="monchis">🏍️ Monchis</option>
-      <option value="biggie">🅱️ Biggie</option>
-    </select>
-  </div>
-
-  <div class="form-section">
-    <label>📍 Lugar</label>
-    <input type="text" id="lugar" placeholder="Local de compra" required>
-  </div>
-
-  <div class="form-section">
-    <label>💸 Monto (Gs)</label>
-    <input type="number" id="monto" placeholder="" min="0" max="1000000" required>
-  </div>
-
-  <div class="form-section">
-    <label>🔻 Descuento (%)</label>
-    <input type="number" id="descuento" placeholder="Según tu categoría" min="10" max="50">
-  </div>
-
-  <div class="form-section">
-    <label>📅 Fecha</label>
-    <input type="date" id="fecha" required>
-  </div>
-
-  <div class="form-section">
-    <label>📝 Nota</label>
-    <textarea id="nota" placeholder="Detalles adicionales"></textarea>
-  </div>
-
-  <div class="form-buttons">
-    <button type="submit">💾 Agregar Gasto</button>
-    <button type="button" onclick="resetearGastos()">🧹 Resetear Mes</button>
-  </div>
-</form>
-
-   <div class="grid">
-      <input type="text" id="filtroTexto" placeholder="Buscar..." oninput="mostrarGastos()">
-      <select id="filtroCategoria" onchange="mostrarGastos()">
-        <option value="">📂 Categorías</option>
-      <option value="combustible">⛽️ Combustible</option>
-      <option value="supermercado">🛒 Supermercado</option>
-      <option value="comida">🍽️ Comida</option>
-      <option value="fiesta">🎉 Fiesta</option>
-      <option value="ocio">🎟️ Entradas</option>
-      <option value="otros">💊 Farmacia</option>
-      <option value="monchis">🏍️ Monchis</option>
-      <option value="biggie">🅱️ Biggie</option>
-      </select>
-    </div>
-    <div class="form-section">
-  	<h3>⬆️Exportar Gastos desde CSV</h3>
-        <button class="btn btn-outline-secondary me-2 w-50" onclick="exportarCSV()">Exportar CSV</button>
-     </div>
-        <hr>
-        <div class="form-section">
-  <h3>⬇️ Importar Gastos desde CSV</h3>
-  <input  type="file" id="inputCSV" accept=".csv" onchange="importarCSV(event)">
-</div>
-    <div class="summary" id="resumen"></div>
-    <div class="form-section" style="margin-top: 2rem;">
-  		<label for="presupuestoCategoria"><b>💸 Detalle de Gastos</b></label>
-   </div>
-    <table class="table" id="tablaGastos"></table>
-<hr> 
-<div class="form-section" style="margin-top: 2rem;">
-  <label for="presupuestoCategoria"><b>💰 Modificar Presupuesto Mensual</b></label>
-  <select id="presupuestoCategoria">
-        <option value="">📂 Categorías</option>
-      <option value="combustible">⛽️ Combustible</option>
-      <option value="supermercado">🛒 Supermercado</option>
-      <option value="comida">🍽️ Comida</option>
-      <option value="fiesta">🎉 Fiesta</option>
-      <option value="ocio">🎟️ Entradas</option>
-      <option value="otros">💊 Farmacia</option>
-      <option value="monchis">🏍️ Monchis</option>
-      <option value="biggie">🅱️ Biggie</option>
-  </select>
-  <input type="number" id="nuevoPresupuesto" placeholder="Nuevo monto (Gs)" min="0">
-  <div class="form-buttons">
-    <button type="button" onclick="modificarPresupuesto()">💾 Guardar Presupuesto</button>
-    <button type="button" onclick="restablecerPresupuestos()">♻️ Restablecer Presupuestos</button>
-  </div>
-</div>
-<hr>
-    <div class="chart">
-      <canvas id="graficoGastos" width="400" height="300"></canvas>
-    </div>
-            <input type="date" id="filtroFecha" class="invisible" onchange="mostrarGastos()">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-light">
+  <header class="bg-success text-white text-center py-3 mb-3 shadow-sm">
+    <h3>📊 Control de Gastos - <span id="mesActual"></span></h3>
+  </header>
+
+  <div class="container">
+
+    <!-- Formulario de Gasto -->
+    <form id="formGasto" class="card shadow-sm mb-4" onsubmit="agregarGasto(); return false;">
+      <div class="card-body">
+        <h5 class="card-title mb-3">📋 Agregar Gasto</h5>
+        <div class="mb-3">
+          <label class="form-label">📂 Categoría</label>
+          <select id="categoria" class="form-select" required>
+            <option value="combustible">⛽️ Combustible</option>
+            <option value="supermercado">🛒 Supermercado</option>
+            <option value="comida">🍽️ Comida</option>
+            <option value="fiesta">🎉 Fiesta</option>
+            <option value="ocio">🎟️ Entradas</option>
+            <option value="otros">💊 Farmacia</option>
+            <option value="monchis">🏍️ Monchis</option>
+            <option value="biggie">🅱️ Biggie</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">📍 Lugar</label>
+          <input type="text" id="lugar" class="form-control" required>
+        </div>
+        <div class="mb-3 row">
+          <div class="col-6">
+            <label class="form-label">💸 Monto (Gs)</label>
+            <input type="number" id="monto" class="form-control" required>
+          </div>
+          <div class="col-6">
+            <label class="form-label">🔻 Descuento (%)</label>
+            <input type="number" id="descuento" class="form-control">
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">📅 Fecha</label>
+          <input type="date" id="fecha" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">📝 Nota</label>
+          <textarea id="nota" class="form-control" rows="2"></textarea>
+        </div>
+        <div class="d-grid gap-2">
+          <button type="submit" class="btn btn-success">💾 Agregar Gasto</button>
+          <button type="button" class="btn btn-outline-danger" onclick="resetearGastos()">🧹 Resetear Mes</button>
+        </div>
+      </div>
+    </form>
+
+    <!-- Filtros -->
+    <div class="row g-2 mb-3">
+      <div class="col-12 col-sm-6">
+        <input type="text" id="filtroTexto" class="form-control" placeholder="🔍 Buscar..." oninput="mostrarGastos()">
+      </div>
+      <div class="col-12 col-sm-6">
+        <select id="filtroCategoria" class="form-select" onchange="mostrarGastos()">
+          <option value="">📂 Categorías</option>
+          <option value="combustible">⛽️ Combustible</option>
+          <option value="supermercado">🛒 Supermercado</option>
+          <option value="comida">🍽️ Comida</option>
+          <option value="fiesta">🎉 Fiesta</option>
+          <option value="ocio">🎟️ Entradas</option>
+          <option value="otros">💊 Farmacia</option>
+          <option value="monchis">🏍️ Monchis</option>
+          <option value="biggie">🅱️ Biggie</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Importación / Exportación -->
+    <div class="mb-4">
+      <h5>⬇️ Importar / Exportar</h5>
+      <div class="d-flex flex-column flex-sm-row gap-2">
+        <button class="btn btn-outline-primary w-100" onclick="exportarCSV()">📤 Exportar CSV</button>
+        <input type="file" class="form-control w-100" id="inputCSV" accept=".csv">
+      </div>
+    </div>
+
+    <!-- Resumen por categoría -->
+    <div class="row" id="resumen"></div>
+
+    <!-- Tabla de gastos -->
+    <div class="table-responsive mt-4">
+      <table class="table table-bordered table-hover" id="tablaGastos"></table>
+    </div>
+
+    <!-- Gráfico -->
+    <div class="chart my-4 text-center">
+      <canvas id="graficoGastos" height="300"></canvas>
+    </div>
+  </div>
+
   <script>
-    let categoriasPersonalizadas = JSON.parse(localStorage.getItem("categoriasPersonalizadas")) || {};
-
-  function crearCategoria() {
-    const nombre = document.getElementById("nuevaCategoriaNombre").value.toLowerCase();
-    const emoji = document.getElementById("nuevaCategoriaEmoji").value.trim();
-    const color = document.getElementById("nuevaCategoriaColor").value;
-
-    if (!nombre || !emoji || !color) {
-      return mostrarToast("Completa todos los campos.", "#f44336");
-    }
-
-    if (categoriasPersonalizadas[nombre]) {
-      return mostrarToast("La categoría ya existe.", "#f44336");
-    }
-
-    categoriasPersonalizadas[nombre] = { emoji, color };
-    localStorage.setItem("categoriasPersonalizadas", JSON.stringify(categoriasPersonalizadas));
-
-    if (!presupuestos[nombre]) presupuestos[nombre] = 1000000;
-    localStorage.setItem("presupuestos", JSON.stringify(presupuestos));
-
-    actualizarSelectsCategoria();
-    mostrarGastos();
-    mostrarToast("Categoría agregada con éxito.", "#4CAF50");
-    document.getElementById("formCategoria").reset();
-  }
-
-  function actualizarSelectsCategoria() {
-    const selects = [
-      document.getElementById("categoria"),
-      document.getElementById("presupuestoCategoria"),
-      document.getElementById("filtroCategoria")
-    ];
-
-    const opcionesBase = `
-      <option value="">📂 Categorías</option>
-      <option value="combustible">⛽️ Combustible</option>
-      <option value="supermercado">🛒 Supermercado</option>
-      <option value="comida">🍽️ Comida</option>
-      <option value="fiesta">🎉 Fiesta</option>
-      <option value="ocio">🎟️ Entradas</option>
-      <option value="otros">💊 Farmacia</option>
-      <option value="monchis">🏍️ Monchis</option>
-      <option value="biggie">🅱️ Biggie</option>
-    `;
-
-    selects.forEach(select => {
-      select.innerHTML = opcionesBase;
-      Object.entries(categoriasPersonalizadas).forEach(([key, val]) => {
-        const texto = `${val.emoji} ${key.charAt(0).toUpperCase() + key.slice(1)}`;
-        const opt = document.createElement("option");
-        opt.value = key;
-        opt.textContent = texto;
-        select.appendChild(opt);
-      });
-    });
-  }
-
-  function importarCSV(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const contenido = e.target.result;
-      const lineas = contenido.split("\n").slice(1);
-      let cargados = 0;
-
-      lineas.forEach(linea => {
-        const [lugar, categoria, fecha, monto, descuento, total] = linea.split(",");
-        if (categoria && lugar && fecha) {
-          const cat = categoria.trim().toLowerCase();
-
-          if (!presupuestos[cat]) presupuestos[cat] = 1000000;
-          if (!categoriasPersonalizadas[cat] && !["combustible", "supermercado", "comida", "fiesta", "ocio", "otros" , "monchis" , "biggie"].includes(cat)) {
-            categoriasPersonalizadas[cat] = { emoji: "📦", color: "#607D8B" };
-          }
-
-          gastos.push({
-            lugar: lugar.trim(),
-            categoria: cat,
-            fecha: fecha.trim(),
-            monto: parseFloat(monto) || 0,
-            descuento: parseFloat(descuento) || 0,
-            final: parseFloat(total) || 0,
-            nota: "Importado"
-          });
-          cargados++;
-        }
-      });
-
-      localStorage.setItem("gastos", JSON.stringify(gastos));
-      localStorage.setItem("categoriasPersonalizadas", JSON.stringify(categoriasPersonalizadas));
-      localStorage.setItem("presupuestos", JSON.stringify(presupuestos));
-
-      actualizarSelectsCategoria();
-      mostrarGastos();
-      mostrarToast(`Se importaron ${cargados} gastos.`, "#4CAF50");
-    };
-    reader.readAsText(file);
-  }
-
-  actualizarSelectsCategoria();
     const gastos = JSON.parse(localStorage.getItem('gastos')) || [];
     const presupuestos = JSON.parse(localStorage.getItem('presupuestos')) || {
       combustible: 1000000,
@@ -349,7 +116,7 @@
       fiesta: 1000000,
       ocio: 1000000,
       otros: 1000000,
-      monchis: 500000,
+      monchis: 1000000,
       biggie: 1000000
     };
 
@@ -359,223 +126,107 @@
     function agregarGasto() {
       const categoria = document.getElementById('categoria').value;
       const lugar = document.getElementById('lugar').value.trim();
-      const monto = parseInt(document.getElementById('monto').value.replace(/\D/g, ''));
+      const monto = parseFloat(document.getElementById('monto').value);
       const descuento = parseFloat(document.getElementById('descuento').value) || 0;
       const fecha = document.getElementById('fecha').value;
       const nota = document.getElementById('nota').value;
       const final = monto * (1 - descuento / 100);
 
-      if (!monto || monto <= 0 || !fecha || !categoria || !lugar) {
-        return mostrarToast('Complete todos los campos obligatorios con un monto válido.', '#f44336');
-      }
+      if (!monto || monto <= 0 || !fecha || !categoria || !lugar) return;
 
       gastos.push({ categoria, lugar, monto, descuento, fecha, nota, final });
       localStorage.setItem('gastos', JSON.stringify(gastos));
       mostrarGastos();
-
-function modificarPresupuesto() {
-  const categoria = document.getElementById('presupuestoCategoria').value;
-  const nuevo = parseInt(document.getElementById('nuevoPresupuesto').value);
-  if (!categoria || isNaN(nuevo) || nuevo < 0) {
-    return mostrarToast('Selecciona una categoría y un monto válido.', '#f44336');
-  }
-  presupuestos[categoria] = nuevo;
-  localStorage.setItem('presupuestos', JSON.stringify(presupuestos));
-  mostrarGastos();
-  mostrarToast('Presupuesto actualizado con éxito.', '#4CAF50');
-}
-
-function restablecerPresupuestos() {
-  if (confirm('¿Deseas restablecer todos los presupuestos al valor predeterminado?')) {
-    Object.keys(presupuestos).forEach(cat => presupuestos[cat] = 1000000);
-    localStorage.setItem('presupuestos', JSON.stringify(presupuestos));
-    mostrarGastos();
-    mostrarToast('Presupuestos restablecidos.', '#4CAF50');
-  }
-}
-
-function toggleGrafico() {
-  const grafico = document.querySelector('.chart');
-  grafico.style.display = grafico.style.display === 'none' ? 'block' : 'none';
-}
-
-function mostrarToast(mensaje, color = '#333') {
-  const toast = document.getElementById('toast');
-  toast.style.backgroundColor = color;
-  toast.innerText = mensaje;
-  toast.style.visibility = 'visible';
-  toast.style.opacity = '1';
-
-  setTimeout(() => {
-    toast.style.opacity = '0';
-    toast.style.visibility = 'hidden';
-  }, 3000);
-}
-
     }
 
-    function mostrarGastos() {
-      const filtroTexto = document.getElementById('filtroTexto').value.toLowerCase();
-      const filtroCategoria = document.getElementById('filtroCategoria').value;
-      const filtroFecha = document.getElementById('filtroFecha').value;
+    
+    function formatoGs(n) {
+      return parseFloat(n).toLocaleString('es-PY', { style: 'currency', currency: 'PYG', minimumFractionDigits: 0 });
+    }
 
-      let filtrados = gastos.filter((g, index) => {
-        const coincideTexto = g.lugar.toLowerCase().includes(filtroTexto) || (g.nota || '').toLowerCase().includes(filtroTexto);
-        const coincideCategoria = !filtroCategoria || g.categoria === filtroCategoria;
-                const coincideFecha = !filtroFecha || g.fecha.startsWith(filtroFecha);
-        g._index = index; // Para saber qué índice tiene
-        return coincideTexto && coincideCategoria && coincideFecha;
-      });
+
+    function mostrarGastos() {
+      const texto = document.getElementById('filtroTexto').value.toLowerCase();
+      const filtro = document.getElementById('filtroCategoria').value;
+
+      const filtrados = gastos.filter(g => 
+        (!filtro || g.categoria === filtro) &&
+        (g.lugar.toLowerCase().includes(texto) || (g.nota || '').toLowerCase().includes(texto))
+      );
 
       const tabla = document.getElementById('tablaGastos');
-      if (filtrados.length === 0) {
-        tabla.innerHTML = '<tr><td colspan="8">No hay gastos que coincidan con los filtros.</td></tr>';
+      if (!filtrados.length) {
+        tabla.innerHTML = '<tr><td colspan="8" class="text-center">Sin datos</td></tr>';
         actualizarResumen(filtrados);
         return;
       }
 
       tabla.innerHTML = `
-        <tr><th>Fecha</th><th>Categoría</th><th>Lugar</th><th>Monto</th><th>Descuento (%)</th><th>Final</th><th>Nota</th><th>Acciones</th></tr>
-        ${filtrados.map(g => `<tr>
-          <td>${g.fecha}</td><td>${g.categoria}</td><td>${g.lugar}</td><td>${formatMonto(g.monto)}</td>
-          <td>${g.descuento}</td><td>${formatMonto(g.final)}</td><td>${g.nota || ''}</td>
-          <td><button onclick="eliminarGasto(${g._index})">🗑️</button></td>
-        </tr>`).join('')}
-      `;
+        <thead><tr>
+          <th>Fecha</th><th>Categoría</th><th>Lugar</th><th>Monto</th><th>Descuento (%)</th><th>Desc. (Gs)</th><th>Total</th><th>Nota</th>
+        </tr></thead><tbody>
+        ${filtrados.map(g => `
+          <tr>
+            <td>${g.fecha}</td>
+            <td>${g.categoria}</td>
+            <td>${g.lugar}</td>
+            <td>${formatoGs(g.monto)}</td>
+            <td>${g.descuento}%</td>
+            <td>${formatoGs(g.monto * g.descuento / 100)}</td>
+            <td>${formatoGs(g.final)}</td>
+            <td>${g.nota || ""}</td>
+          </tr>`).join('')}
+        </tbody>`;
 
       actualizarResumen(filtrados);
     }
 
-    function eliminarGasto(index) {
-      if (confirm('¿Eliminar este gasto?')) {
-        gastos.splice(index, 1);
-        localStorage.setItem('gastos', JSON.stringify(gastos));
-        mostrarGastos();
+    function actualizarResumen(lista = gastos) {
+      const resumen = document.getElementById("resumen");
+      const totales = {};
+      lista.forEach(g => {
+        if (!totales[g.categoria]) totales[g.categoria] = 0;
+        totales[g.categoria] += g.final;
+      });
+      Object.keys(totales).forEach(cat => {
+        if (!presupuestos[cat]) presupuestos[cat] = 1000000;
+      });
 
-function modificarPresupuesto() {
-  const categoria = document.getElementById('presupuestoCategoria').value;
-  const nuevo = parseInt(document.getElementById('nuevoPresupuesto').value);
-  if (!categoria || isNaN(nuevo) || nuevo < 0) {
-    return mostrarToast('Selecciona una categoría y un monto válido.', '#f44336');
-  }
-  presupuestos[categoria] = nuevo;
-  localStorage.setItem('presupuestos', JSON.stringify(presupuestos));
-  mostrarGastos();
-  mostrarToast('Presupuesto actualizado con éxito.', '#4CAF50');
-}
+      const colores = {
+        combustible: "#f44336", supermercado: "#2196F3", comida: "#FFC107", fiesta: "#9C27B0",
+        ocio: "#FF9800", otros: "#607D8B", monchis: "#800080", biggie: "#800000"
+      };
+      const iconos = {
+        combustible: "⛽", supermercado: "🛒", comida: "🍽️", fiesta: "🎉",
+        ocio: "🎟️", otros: "💊", monchis: "🏍️", biggie: "🅱️"
+      };
 
-function restablecerPresupuestos() {
-  if (confirm('¿Deseas restablecer todos los presupuestos al valor predeterminado?')) {
-    Object.keys(presupuestos).forEach(cat => presupuestos[cat] = 1000000);
-    localStorage.setItem('presupuestos', JSON.stringify(presupuestos));
-    mostrarGastos();
-    mostrarToast('Presupuestos restablecidos.', '#4CAF50');
-  }
-}
+      resumen.innerHTML = Object.keys(totales).map(cat => {
+        const usado = totales[cat];
+        const asignado = presupuestos[cat];
+        const restante = asignado - usado;
+        return `
+          <div class="col-12 col-md-6 col-lg-4 mb-3">
+            <div class="border rounded p-3" style="background-color: ${colores[cat] || '#999'}10; border-color: ${colores[cat] || '#999'}">
+              <h6 style="color: ${colores[cat] || '#999'}">${iconos[cat] || "📦"} ${cat}</h6>
+              <div>Asignado: <b>${formatoGs(asignado)}</b></div>
+              <div>Usado: <b>${formatoGs(usado)}</b></div>
+              <div>Restante: <b style="color: ${restante < 0 ? 'red' : 'green'}">${formatoGs(restante)}</b></div>
+            </div>
+          </div>`;
+      }).join("");
 
-function toggleGrafico() {
-  const grafico = document.querySelector('.chart');
-  grafico.style.display = grafico.style.display === 'none' ? 'block' : 'none';
-}
-
-function mostrarToast(mensaje, color = '#333') {
-  const toast = document.getElementById('toast');
-  toast.style.backgroundColor = color;
-  toast.innerText = mensaje;
-  toast.style.visibility = 'visible';
-  toast.style.opacity = '1';
-
-  setTimeout(() => {
-    toast.style.opacity = '0';
-    toast.style.visibility = 'hidden';
-  }, 3000);
-}
-
-      }
+      graficar(totales);
     }
 
-    function formatMonto(m) {
-      return m.toLocaleString('es-ES', { maximumFractionDigits: 0 });
-    }
-function actualizarResumen(lista = gastos) {
-  const resumen = document.getElementById('resumen');
-  const totales = {};
-
-  const colores = {
-    combustible: '#f44336',
-    supermercado: '#2196F3',
-    comida: '#FFC107',
-    fiesta: '#9C27B0',
-    ocio: '#FF9800',
-    otros: '#607D8B',
-    monchis: '#800080',
-    biggie: '#800000'
-  };
-
-  const iconos = {
-    combustible: '⛽',
-    supermercado: '🛒',
-    comida: '🍽️',
-    fiesta: '🎉',
-    ocio: '🎟️',
-    otros: '💊',
-    monchis: '🏍️',
-    biggie: '🅱️'
-  };
-
-  // Sumar gastos por categoría
-  lista.forEach(g => {
-    if (!totales[g.categoria]) totales[g.categoria] = 0;
-    totales[g.categoria] += g.final;
-  });
-
-  // Asegurar presupuestos para todas las categorías usadas
-  Object.keys(totales).forEach(cat => {
-    if (!presupuestos[cat]) presupuestos[cat] = 1000000;
-  });
-
-  let totalGeneral = 0;
-  let html = `<h3 style="margin-bottom: 1rem;">📊 Resumen por Categoría</h3><div class="grid">`;
-
-  Object.keys(totales).forEach(cat => {
-    const usado = totales[cat];
-    const asignado = presupuestos[cat];
-    const restante = asignado - usado;
-    totalGeneral += usado;
-
-    html += `
-      <div style="border: 2px solid ${colores[cat] || '#999'}; background-color: ${(colores[cat] || '#999')}10; padding: 1rem; border-radius: 10px;">
-        <div style="font-size: 1.2rem; font-weight: bold; color: ${colores[cat] || '#999'}">${iconos[cat] || '📦'} ${cat.charAt(0).toUpperCase() + cat.slice(1)}</div>
-        <div>Asignado: <b>Gs ${formatMonto(asignado)}</b></div>
-        <div>Usado: <b>Gs ${formatMonto(usado)}</b></div>
-        <div>Restante: <b style="color: ${restante < 0 ? 'red' : 'green'}">Gs ${formatMonto(restante)}</b></div>
-      </div>
-    `;
-  });
-
-  html += `</div><div style="margin-top: 1rem;"><b>Monto total gasto:</b> Gs ${formatMonto(totalGeneral)}</div>`;
-  resumen.innerHTML = html;
-
-  graficar(totales);
-}
-
-
-
-    function graficar(totales = null) {
+    function graficar(totales) {
       const ctx = document.getElementById('graficoGastos').getContext('2d');
-      const categorias = Object.keys(presupuestos);
-      const datos = categorias.map(cat => (totales ? totales[cat] : gastos.reduce((a, g) => g.categoria === cat ? a + g.final : a, 0)));
-
-      const colores = [
-        '#f44336', // Combustible
-        '#2196F3', // Supermercado
-        '#FFC107', // Comida
-        '#9C27B0', // Fiesta
-        '#FF9800', // Ocio
-        '#607D8B',  // Farmacia
-        '#800080', // Monchis
-        '#800000'  // Biggie
-      ];
+      const categorias = Object.keys(totales);
+      const datos = Object.values(totales);
+      const colores = categorias.map(cat => ({
+        combustible: "#f44336", supermercado: "#2196F3", comida: "#FFC107", fiesta: "#9C27B0",
+        ocio: "#FF9800", otros: "#607D8B", monchis: "#800080", biggie: "#800000"
+      }[cat] || "#999"));
 
       if (window.chart) window.chart.destroy();
       window.chart = new Chart(ctx, {
@@ -583,100 +234,52 @@ function actualizarResumen(lista = gastos) {
         data: {
           labels: categorias,
           datasets: [{
-            label: 'Gastos por categoría',
             data: datos,
             backgroundColor: colores
           }]
         },
-        options: {
-          plugins: {
-            legend: { display: false }
-          },
-          scales: {
-            y: { beginAtZero: true }
-          }
-        }
+        options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
       });
     }
 
+    function exportarCSV() {
+      const rows = [["Lugar","Categoría","Fecha","Monto","Descuento","Total"], ...gastos.map(g => [g.lugar, g.categoria, g.fecha, g.monto, g.descuento, g.final])];
+      const csv = rows.map(r => r.join(",")).join("\n");
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "gastos.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    document.getElementById("inputCSV").addEventListener("change", function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const lines = event.target.result.split("\n").slice(1);
+        lines.forEach(line => {
+          const [lugar, categoria, fecha, monto, descuento, total] = line.split(",");
+          if (lugar && categoria && fecha) {
+            gastos.push({ lugar, categoria, fecha, monto: parseFloat(monto), descuento: parseFloat(descuento), final: parseFloat(total), nota: "Importado" });
+          }
+        });
+        localStorage.setItem("gastos", JSON.stringify(gastos));
+        mostrarGastos();
+      };
+      reader.readAsText(file);
+    });
+
     function resetearGastos() {
-      if (confirm('¿Seguro que deseas reiniciar todos los gastos del mes?')) {
-        localStorage.removeItem('gastos');
+      if (confirm("¿Eliminar todos los gastos?")) {
+        localStorage.removeItem("gastos");
         location.reload();
       }
     }
 
     mostrarGastos();
-
-function modificarPresupuesto() {
-  const categoria = document.getElementById('presupuestoCategoria').value;
-  const nuevo = parseInt(document.getElementById('nuevoPresupuesto').value);
-  if (!categoria || isNaN(nuevo) || nuevo < 0) {
-    return mostrarToast('Selecciona una categoría y un monto válido.', '#f44336');
-  }
-  presupuestos[categoria] = nuevo;
-  localStorage.setItem('presupuestos', JSON.stringify(presupuestos));
-  mostrarGastos();
-  mostrarToast('Presupuesto actualizado con éxito.', '#4CAF50');
-}
-
-function restablecerPresupuestos() {
-  if (confirm('¿Deseas cerar todos el presupuesto?')) {
-    Object.keys(presupuestos).forEach(cat => presupuestos[cat] = 0);
-    localStorage.setItem('presupuestos', JSON.stringify(presupuestos));
-    mostrarGastos();
-    mostrarToast('Presupuestos restablecidos.', '#4CAF50');
-  }
-}
-
-function toggleGrafico() {
-  const grafico = document.querySelector('.chart');
-  grafico.style.display = grafico.style.display === 'none' ? 'block' : 'none';
-}
-
-function mostrarToast(mensaje, color = '#333') {
-  const toast = document.getElementById('toast');
-  toast.style.backgroundColor = color;
-  toast.innerText = mensaje;
-  toast.style.visibility = 'visible';
-  toast.style.opacity = '1';
-
-  setTimeout(() => {
-    toast.style.opacity = '0';
-    toast.style.visibility = 'hidden';
-  }, 3000);
-}
-function exportarCSV() {
-  const encabezado = ["Lugar", "Categoría", "Fecha", "Monto", "Descuento", "Total"];
-  const rows = gastos.map(g => [g.lugar, g.categoria, g.fecha, g.monto, g.descuento, g.monto - g.descuento]);
-  let csv = encabezado.join(",") + "\n" + rows.map(r => r.join(",")).join("\n");
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-  const link = document.createElement("a");
-  link.setAttribute("href", URL.createObjectURL(blob));
-  link.setAttribute("download", `gastos_${new Date().toISOString().slice(0,7)}.csv`);
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-}
   </script>
-
-<div id="toast" style="
-  visibility: hidden;
-  min-width: 250px;
-  background-color: #333;
-  color: #fff;
-  text-align: center;
-  border-radius: 4px;
-  padding: 16px;
-  position: fixed;
-  z-index: 1;
-  left: 50%;
-  bottom: 30px;
-  font-size: 1rem;
-  transform: translateX(-50%);
-  transition: visibility 0s, opacity 0.5s ease-in-out;
-  opacity: 0;
-"></div>
-
 </body>
 </html>
