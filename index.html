@@ -1,9 +1,13 @@
 	<!DOCTYPE html>
 <html lang="es">
 <head>
+<head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Control de Gastos Mensuales</title>
+  <meta name="author" content="JCODAHIR">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta content="WUPY" name="description">
+  <title>WUPY-JO</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
       font-family: sans-serif;
@@ -22,7 +26,7 @@
       max-width: 900px;
       margin: auto;
     }
-    // Class
+
 .visible {
   visibility: visible;
 }
@@ -128,7 +132,8 @@
 </head>
 <body>
   <header>
-    <h1>Control de Gastos - <span id="mesActual"></span></h1>
+    <h3>Gastos - <span id="mesActual"></span></h3>
+
   </header>
   <div class="container">
   
@@ -140,8 +145,10 @@
       <option value="supermercado">🛒 Supermercado</option>
       <option value="comida">🍽️ Comida</option>
       <option value="fiesta">🎉 Fiesta</option>
-      <option value="ocio">🎮 Ocio</option>
+      <option value="ocio">🎟️ Entradas</option>
       <option value="otros">💊 Farmacia</option>
+      <option value="monchis">🏍️ Monchis</option>
+      <option value="biggie">🅱️ Biggie</option>
     </select>
   </div>
 
@@ -184,17 +191,27 @@
       <option value="supermercado">🛒 Supermercado</option>
       <option value="comida">🍽️ Comida</option>
       <option value="fiesta">🎉 Fiesta</option>
-      <option value="ocio">🎮 Ocio</option>
+      <option value="ocio">🎟️ Entradas</option>
       <option value="otros">💊 Farmacia</option>
+      <option value="monchis">🏍️ Monchis</option>
+      <option value="biggie">🅱️ Biggie</option>
       </select>
     </div>
+    <div class="form-section">
+  	<h3>⬆️Exportar Gastos desde CSV</h3>
         <button class="btn btn-outline-secondary me-2 w-50" onclick="exportarCSV()">Exportar CSV</button>
-        <input type="date" id="filtroFecha" class="invisible" onchange="mostrarGastos()">
+     </div>
+        <hr>
+        <div class="form-section">
+  <h3>⬇️ Importar Gastos desde CSV</h3>
+  <input  type="file" id="inputCSV" accept=".csv" onchange="importarCSV(event)">
+</div>
     <div class="summary" id="resumen"></div>
-
+    <div class="form-section" style="margin-top: 2rem;">
+  		<label for="presupuestoCategoria"><b>💸 Detalle de Gastos</b></label>
+   </div>
     <table class="table" id="tablaGastos"></table>
-
-    
+<hr> 
 <div class="form-section" style="margin-top: 2rem;">
   <label for="presupuestoCategoria"><b>💰 Modificar Presupuesto Mensual</b></label>
   <select id="presupuestoCategoria">
@@ -203,8 +220,10 @@
       <option value="supermercado">🛒 Supermercado</option>
       <option value="comida">🍽️ Comida</option>
       <option value="fiesta">🎉 Fiesta</option>
-      <option value="ocio">🎮 Ocio</option>
+      <option value="ocio">🎟️ Entradas</option>
       <option value="otros">💊 Farmacia</option>
+      <option value="monchis">🏍️ Monchis</option>
+      <option value="biggie">🅱️ Biggie</option>
   </select>
   <input type="number" id="nuevoPresupuesto" placeholder="Nuevo monto (Gs)" min="0">
   <div class="form-buttons">
@@ -212,13 +231,116 @@
     <button type="button" onclick="restablecerPresupuestos()">♻️ Restablecer Presupuestos</button>
   </div>
 </div>
-
+<hr>
     <div class="chart">
       <canvas id="graficoGastos" width="400" height="300"></canvas>
     </div>
-
+            <input type="date" id="filtroFecha" class="invisible" onchange="mostrarGastos()">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
+    let categoriasPersonalizadas = JSON.parse(localStorage.getItem("categoriasPersonalizadas")) || {};
+
+  function crearCategoria() {
+    const nombre = document.getElementById("nuevaCategoriaNombre").value.toLowerCase();
+    const emoji = document.getElementById("nuevaCategoriaEmoji").value.trim();
+    const color = document.getElementById("nuevaCategoriaColor").value;
+
+    if (!nombre || !emoji || !color) {
+      return mostrarToast("Completa todos los campos.", "#f44336");
+    }
+
+    if (categoriasPersonalizadas[nombre]) {
+      return mostrarToast("La categoría ya existe.", "#f44336");
+    }
+
+    categoriasPersonalizadas[nombre] = { emoji, color };
+    localStorage.setItem("categoriasPersonalizadas", JSON.stringify(categoriasPersonalizadas));
+
+    if (!presupuestos[nombre]) presupuestos[nombre] = 1000000;
+    localStorage.setItem("presupuestos", JSON.stringify(presupuestos));
+
+    actualizarSelectsCategoria();
+    mostrarGastos();
+    mostrarToast("Categoría agregada con éxito.", "#4CAF50");
+    document.getElementById("formCategoria").reset();
+  }
+
+  function actualizarSelectsCategoria() {
+    const selects = [
+      document.getElementById("categoria"),
+      document.getElementById("presupuestoCategoria"),
+      document.getElementById("filtroCategoria")
+    ];
+
+    const opcionesBase = `
+      <option value="">📂 Categorías</option>
+      <option value="combustible">⛽️ Combustible</option>
+      <option value="supermercado">🛒 Supermercado</option>
+      <option value="comida">🍽️ Comida</option>
+      <option value="fiesta">🎉 Fiesta</option>
+      <option value="ocio">🎟️ Entradas</option>
+      <option value="otros">💊 Farmacia</option>
+      <option value="monchis">🏍️ Monchis</option>
+      <option value="biggie">🅱️ Biggie</option>
+    `;
+
+    selects.forEach(select => {
+      select.innerHTML = opcionesBase;
+      Object.entries(categoriasPersonalizadas).forEach(([key, val]) => {
+        const texto = `${val.emoji} ${key.charAt(0).toUpperCase() + key.slice(1)}`;
+        const opt = document.createElement("option");
+        opt.value = key;
+        opt.textContent = texto;
+        select.appendChild(opt);
+      });
+    });
+  }
+
+  function importarCSV(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const contenido = e.target.result;
+      const lineas = contenido.split("\n").slice(1);
+      let cargados = 0;
+
+      lineas.forEach(linea => {
+        const [lugar, categoria, fecha, monto, descuento, total] = linea.split(",");
+        if (categoria && lugar && fecha) {
+          const cat = categoria.trim().toLowerCase();
+
+          if (!presupuestos[cat]) presupuestos[cat] = 1000000;
+          if (!categoriasPersonalizadas[cat] && !["combustible", "supermercado", "comida", "fiesta", "ocio", "otros" , "monchis" , "biggie"].includes(cat)) {
+            categoriasPersonalizadas[cat] = { emoji: "📦", color: "#607D8B" };
+          }
+
+          gastos.push({
+            lugar: lugar.trim(),
+            categoria: cat,
+            fecha: fecha.trim(),
+            monto: parseFloat(monto) || 0,
+            descuento: parseFloat(descuento) || 0,
+            final: parseFloat(total) || 0,
+            nota: "Importado"
+          });
+          cargados++;
+        }
+      });
+
+      localStorage.setItem("gastos", JSON.stringify(gastos));
+      localStorage.setItem("categoriasPersonalizadas", JSON.stringify(categoriasPersonalizadas));
+      localStorage.setItem("presupuestos", JSON.stringify(presupuestos));
+
+      actualizarSelectsCategoria();
+      mostrarGastos();
+      mostrarToast(`Se importaron ${cargados} gastos.`, "#4CAF50");
+    };
+    reader.readAsText(file);
+  }
+
+  actualizarSelectsCategoria();
     const gastos = JSON.parse(localStorage.getItem('gastos')) || [];
     const presupuestos = JSON.parse(localStorage.getItem('presupuestos')) || {
       combustible: 1000000,
@@ -226,7 +348,9 @@
       comida: 1000000,
       fiesta: 1000000,
       ocio: 1000000,
-      otros: 1000000
+      otros: 1000000,
+      monchis: 500000,
+      biggie: 1000000
     };
 
     document.getElementById('fecha').valueAsDate = new Date();
@@ -373,29 +497,42 @@ function mostrarToast(mensaje, color = '#333') {
     function formatMonto(m) {
       return m.toLocaleString('es-ES', { maximumFractionDigits: 0 });
     }
-
 function actualizarResumen(lista = gastos) {
   const resumen = document.getElementById('resumen');
   const totales = {};
+
   const colores = {
     combustible: '#f44336',
     supermercado: '#2196F3',
     comida: '#FFC107',
     fiesta: '#9C27B0',
     ocio: '#FF9800',
-    otros: '#607D8B'
+    otros: '#607D8B',
+    monchis: '#800080',
+    biggie: '#800000'
   };
+
   const iconos = {
     combustible: '⛽',
     supermercado: '🛒',
     comida: '🍽️',
     fiesta: '🎉',
-    ocio: '🎮',
-    otros: '💊'
+    ocio: '🎟️',
+    otros: '💊',
+    monchis: '🏍️',
+    biggie: '🅱️'
   };
 
-  Object.keys(presupuestos).forEach(cat => totales[cat] = 0);
-  lista.forEach(g => totales[g.categoria] += g.final);
+  // Sumar gastos por categoría
+  lista.forEach(g => {
+    if (!totales[g.categoria]) totales[g.categoria] = 0;
+    totales[g.categoria] += g.final;
+  });
+
+  // Asegurar presupuestos para todas las categorías usadas
+  Object.keys(totales).forEach(cat => {
+    if (!presupuestos[cat]) presupuestos[cat] = 1000000;
+  });
 
   let totalGeneral = 0;
   let html = `<h3 style="margin-bottom: 1rem;">📊 Resumen por Categoría</h3><div class="grid">`;
@@ -407,8 +544,8 @@ function actualizarResumen(lista = gastos) {
     totalGeneral += usado;
 
     html += `
-      <div style="border: 2px solid ${colores[cat]}; background-color: ${colores[cat]}10; padding: 1rem; border-radius: 10px;">
-        <div style="font-size: 1.2rem; font-weight: bold; color: ${colores[cat]}">${iconos[cat]} ${cat.charAt(0).toUpperCase() + cat.slice(1)}</div>
+      <div style="border: 2px solid ${colores[cat] || '#999'}; background-color: ${(colores[cat] || '#999')}10; padding: 1rem; border-radius: 10px;">
+        <div style="font-size: 1.2rem; font-weight: bold; color: ${colores[cat] || '#999'}">${iconos[cat] || '📦'} ${cat.charAt(0).toUpperCase() + cat.slice(1)}</div>
         <div>Asignado: <b>Gs ${formatMonto(asignado)}</b></div>
         <div>Usado: <b>Gs ${formatMonto(usado)}</b></div>
         <div>Restante: <b style="color: ${restante < 0 ? 'red' : 'green'}">Gs ${formatMonto(restante)}</b></div>
@@ -423,6 +560,7 @@ function actualizarResumen(lista = gastos) {
 }
 
 
+
     function graficar(totales = null) {
       const ctx = document.getElementById('graficoGastos').getContext('2d');
       const categorias = Object.keys(presupuestos);
@@ -434,7 +572,9 @@ function actualizarResumen(lista = gastos) {
         '#FFC107', // Comida
         '#9C27B0', // Fiesta
         '#FF9800', // Ocio
-        '#607D8B'  // Farmacia
+        '#607D8B',  // Farmacia
+        '#800080', // Monchis
+        '#800000'  // Biggie
       ];
 
       if (window.chart) window.chart.destroy();
