@@ -184,7 +184,7 @@
       const totales = {};
       lista.forEach(g => {
         if (!totales[g.categoria]) totales[g.categoria] = 0;
-        totales[g.categoria] += g.final;
+        totales[g.categoria] += g.monto;
       });
       Object.keys(totales).forEach(cat => {
         if (!presupuestos[cat]) presupuestos[cat] = 1000000;
