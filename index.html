@@ -159,7 +159,7 @@
 
       tabla.innerHTML = `
         <thead><tr>
-          <th>Fecha</th><th>Categoría</th><th>Lugar</th><th>Monto</th><th>Des (%)</th><th>Reintegro (Gs)</th><th>A pagar</th><th>Nota</th><th>Acciones</th>
+          <th>Fecha</th><th>Categoría</th><th>Lugar</th><th>Monto</th><th>Des (%)</th><th>Reintegro (Gs)</th><th>A pagar</th><th>Nota</th>
         </tr></thead><tbody>
         ${filtrados.map(g => `
           <tr>
@@ -171,7 +171,6 @@
             <td>${formatoGs(g.monto * g.descuento / 100)}</td>
             <td>${formatoGs(g.final)}</td>
             <td>${g.nota || ""}</td>
-            <td><button onclick="eliminarGasto(${g._index})">🗑️</button></td>
           </tr>`).join('')}
         </tbody>`;
 
@@ -188,12 +187,7 @@
       Object.keys(totales).forEach(cat => {
         if (!presupuestos[cat]) presupuestos[cat] = 1000000;
       });
-    function eliminarGasto(index) {
-      if (confirm('¿Eliminar este gasto?')) {
-        gastos.splice(index, 1);
-        localStorage.setItem('gastos', JSON.stringify(gastos));
-        mostrarGastos();
-        
+       
       const colores = {
         combustible: "#f44336", supermercado: "#2196F3", comida: "#FFC107", fiesta: "#9C27B0",
         ocio: "#FF9800", otros: "#607D8B", monchis: "#800080", biggie: "#800000"
