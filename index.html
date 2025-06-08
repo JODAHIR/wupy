@@ -139,7 +139,7 @@
     }
     
     function enviarAGoogleSheets(gasto) {
-      fetch("", {
+      fetch("https://script.google.com/macros/s/AKfycbwMxSZT2nk8k-5Kjx5mYft4fxw8WmydEtwE6vMVyV31dkR6t_ttB0PeNJpxawAmqYfyLA/exec", {
         method: "POST",
         body: JSON.stringify(gasto),
         headers: { "Content-Type": "application/json" }
