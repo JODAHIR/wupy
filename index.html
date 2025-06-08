@@ -121,30 +121,38 @@
     document.getElementById('fecha').valueAsDate = new Date();
     document.getElementById('mesActual').innerText = new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
 
-    function agregarGasto() {
-      const categoria = document.getElementById('categoria').value;
-      const lugar = document.getElementById('lugar').value.trim();
-      const monto = parseFloat(document.getElementById('monto').value);
-      const descuento = parseFloat(document.getElementById('descuento').value) || 0;
-      const fecha = document.getElementById('fecha').value;
-      const nota = document.getElementById('nota').value;
-      const final = monto * (1 - descuento / 100);
-    
-      if (!monto || monto <= 0 || !fecha || !categoria || !lugar) return;
-    
-      const gasto = { categoria, lugar, monto, descuento, fecha, nota, final };
-      gastos.push(gasto);
-      localStorage.setItem('gastos', JSON.stringify(gastos));
-      
-      // Resetear el formulario
-      document.getElementById('formGasto').reset();
-      document.getElementById('fecha').valueAsDate = new Date(); // Fecha actual por defecto
-      document.getElementById('lugar').focus(); // Enfocar al primer campo
-    
-      mostrarGastos(gastos.length - 1); // Pasar el índice del nuevo gasto
-    }
+function agregarGasto() {
+  const categoria = document.getElementById('categoria').value;
+  const lugar = document.getElementById('lugar').value.trim();
+  const monto = parseFloat(document.getElementById('monto').value);
+  const descuento = parseFloat(document.getElementById('descuento').value) || 0;
+  const fecha = document.getElementById('fecha').value;
+  const nota = document.getElementById('nota').value;
+  const final = monto * (1 - descuento / 100);
 
-    
+  if (!monto || monto <= 0 || !fecha || !categoria || !lugar) return;
+
+  const gasto = { categoria, lugar, monto, descuento, fecha, nota, final };
+  gastos.push(gasto);
+  localStorage.setItem('gastos', JSON.stringify(gastos));
+
+  const nuevoIndex = gastos.length - 1;
+
+  // Resetear el formulario
+  document.getElementById('formGasto').reset();
+  document.getElementById('fecha').valueAsDate = new Date(); // Fecha actual
+  document.getElementById('lugar').focus();
+
+  mostrarGastos(nuevoIndex);
+
+  // Rellenar el formulario con el gasto agregado para edición rápida
+  document.getElementById('categoria').value = gasto.categoria;
+  document.getElementById('lugar').value = gasto.lugar;
+  document.getElementById('monto').value = gasto.monto;
+  document.getElementById('descuento').value = gasto.descuento;
+  document.getElementById('fecha').value = gasto.fecha;
+  document.getElementById('nota').value = gasto.nota;
+}
     
     function formatoGs(n) {
       return parseFloat(n).toLocaleString('es-PY', { style: 'currency', currency: 'PYG', minimumFractionDigits: 0 });
