@@ -120,7 +120,7 @@
 
     document.getElementById('fecha').valueAsDate = new Date();
     document.getElementById('mesActual').innerText = new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
-
+let indiceEdicion = null;
 function agregarGasto() {
   const categoria = document.getElementById('categoria').value;
   const lugar = document.getElementById('lugar').value.trim();
@@ -133,27 +133,22 @@ function agregarGasto() {
   if (!monto || monto <= 0 || !fecha || !categoria || !lugar) return;
 
   const gasto = { categoria, lugar, monto, descuento, fecha, nota, final };
-  gastos.push(gasto);
+
+  if (indiceEdicion !== null) {
+    gastos[indiceEdicion] = gasto;
+    indiceEdicion = null;
+  } else {
+    gastos.push(gasto);
+  }
+
   localStorage.setItem('gastos', JSON.stringify(gastos));
 
-  const nuevoIndex = gastos.length - 1;
-
-  // Resetear el formulario
   document.getElementById('formGasto').reset();
-  document.getElementById('fecha').valueAsDate = new Date(); // Fecha actual
+  document.getElementById('fecha').valueAsDate = new Date();
   document.getElementById('lugar').focus();
 
-  mostrarGastos(nuevoIndex);
-
-  // Rellenar el formulario con el gasto agregado para edición rápida
-  document.getElementById('categoria').value = gasto.categoria;
-  document.getElementById('lugar').value = gasto.lugar;
-  document.getElementById('monto').value = gasto.monto;
-  document.getElementById('descuento').value = gasto.descuento;
-  document.getElementById('fecha').value = gasto.fecha;
-  document.getElementById('nota').value = gasto.nota;
+  mostrarGastos(gastos.length - 1);
 }
-    
     function formatoGs(n) {
       return parseFloat(n).toLocaleString('es-PY', { style: 'currency', currency: 'PYG', minimumFractionDigits: 0 });
     }
@@ -176,7 +171,7 @@ function mostrarGastos(focoIndex = null) {
 
     tabla.innerHTML = `
         <thead><tr>
-          <th>Fecha</th><th>Categoría</th><th>Lugar</th><th>Monto</th><th>Des (%)</th><th>Reintegro (Gs)</th><th>A pagar</th><th>Nota</th><th>🆑</th>
+          <th>Fecha</th><th>Categoría</th><th>Lugar</th><th>Monto</th><th>Des (%)</th><th>Reintegro (Gs)</th><th>A pagar</th><th>Nota</th><th>🆑</th><th>✏️</th>
         </tr></thead><tbody>
         ${filtrados.map((g, i) => {
           const index = gastos.indexOf(g);
@@ -191,6 +186,7 @@ function mostrarGastos(focoIndex = null) {
                 <td>${formatoGs(g.monto * g.descuento / 100)}</td>
                 <td>${formatoGs(g.final)}</td>
                 <td>${g.nota || ""}</td>
+                <td> <button class="btn btn-sm btn-outline-primary" onclick="editarGasto(${index})">✏️</button></td>
                 <td><button class="btn btn-sm btn-outline-danger mt-1" onclick="eliminarGasto(${index})">🗑️</button></td>
               </tr>`;
           }).join('')}
@@ -205,6 +201,7 @@ function mostrarGastos(focoIndex = null) {
         }
       }
     }
+    
     function eliminarGasto(index) {
       if (confirm('¿Eliminar este gasto?')) {
         gastos.splice(index, 1);
@@ -212,6 +209,21 @@ function mostrarGastos(focoIndex = null) {
         mostrarGastos();
       }
     }
+    
+    function editarGasto(index) {
+      const g = gastos[index];
+      indiceEdicion = index;
+    
+      document.getElementById('categoria').value = g.categoria;
+      document.getElementById('lugar').value = g.lugar;
+      document.getElementById('monto').value = g.monto;
+      document.getElementById('descuento').value = g.descuento;
+      document.getElementById('fecha').value = g.fecha;
+      document.getElementById('nota').value = g.nota;
+    
+      document.getElementById('lugar').focus();
+    }
+    
     function actualizarResumen(lista = gastos) {
       const resumen = document.getElementById("resumen");
       const totales = {};
