@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -14,7 +13,6 @@
   .ocultar-en-movil {
     display: none;
   }
-
   @media (min-width: 768px) {
     .ocultar-en-movil {
       display: table-cell;
@@ -73,7 +71,6 @@
       </div>
     </form>
 
-    <!-- Filtros -->
     <div class="row g-2 mb-3">
       <div class="col-12 col-sm-6">
         <input type="text" id="filtroTexto" class="form-control" placeholder="🔍 Buscar" oninput="mostrarGastos()">
@@ -93,7 +90,6 @@
       </div>
     </div>
 
-    <!-- Importación / Exportación -->
     <div class="mb-4">
       <h5>⬇️ Importar / Exportar</h5>
       <div class="d-flex flex-column flex-sm-row gap-2">
@@ -102,20 +98,14 @@
       </div>
     </div>
     <hr>
-    <!-- Resumen por categoría -->
     <div class="row" id="resumen"></div>
-
-    <!-- Tabla de gastos -->
     <div class="table-responsive mt-4">
       <table class="table table-bordered table-hover" id="tablaGastos"></table>
     </div>
-
-    <!-- Gráfico -->
     <div class="chart my-4 text-center">
       <canvas id="graficoGastos" height="300"></canvas>
     </div>
   </div>
-
   <script>
     const gastos = JSON.parse(localStorage.getItem('gastos')) || [];
     const presupuestos = JSON.parse(localStorage.getItem('presupuestos')) || {
@@ -140,51 +130,51 @@
     document.getElementById('mesActual').innerText = new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
   let indiceEdicion = null;
 
-function formatearMilesInput(input) {
-  let valor = input.value.replace(/\D/g, ''); // elimina todo lo que no sea número
-  if (!valor) {
-    input.value = '';
-    return;
-  }
-  input.value = parseInt(valor, 10).toLocaleString('es-PY'); // genera 100.000.000
-}
+    function formatearMilesInput(input) {
+      let valor = input.value.replace(/\D/g, ''); // elimina todo lo que no sea número
+      if (!valor) {
+        input.value = '';
+        return;
+      }
+      input.value = parseInt(valor, 10).toLocaleString('es-PY'); // genera 100.000.000
+    }
+        
+    function agregarGasto() {
+      const categoria = document.getElementById('categoria').value;
+      const lugar = document.getElementById('lugar').value.trim();
+      const monto = parseFloat(document.getElementById('monto').value.replace(/\./g, '').replace(/,/g, '.'));
+      const descuento = parseFloat(document.getElementById('descuento').value.replace(/\./g, '').replace(/,/g, '.')) || 0;
+      const fecha = document.getElementById('fecha').value;
+      const nota = document.getElementById('nota').value;
+      const final = monto * (1 - descuento / 100);
     
-function agregarGasto() {
-  const categoria = document.getElementById('categoria').value;
-  const lugar = document.getElementById('lugar').value.trim();
-  const monto = parseFloat(document.getElementById('monto').value.replace(/\./g, '').replace(/,/g, '.'));
-  const descuento = parseFloat(document.getElementById('descuento').value.replace(/\./g, '').replace(/,/g, '.')) || 0;
-  const fecha = document.getElementById('fecha').value;
-  const nota = document.getElementById('nota').value;
-  const final = monto * (1 - descuento / 100);
-
-  if (!monto || monto <= 0 || !fecha || !categoria || !lugar) return;
-
-  const gasto = { categoria, lugar, monto, descuento, fecha, nota, final };
-
-  if (indiceEdicion !== null) {
-    gastos[indiceEdicion] = gasto;
-    indiceEdicion = null;
-  } else {
-    gastos.push(gasto);
-  }
-
-  localStorage.setItem('gastos', JSON.stringify(gastos));
-
-  document.getElementById('formGasto').reset();
-  document.getElementById('fecha').valueAsDate = new Date();
-  document.getElementById('lugar').focus();
-
-  mostrarGastos(gastos.length - 1);
-}
+      if (!monto || monto <= 0 || !fecha || !categoria || !lugar) return;
+    
+      const gasto = { categoria, lugar, monto, descuento, fecha, nota, final };
+    
+      if (indiceEdicion !== null) {
+        gastos[indiceEdicion] = gasto;
+        indiceEdicion = null;
+      } else {
+        gastos.push(gasto);
+      }
+    
+      localStorage.setItem('gastos', JSON.stringify(gastos));
+    
+      document.getElementById('formGasto').reset();
+      document.getElementById('fecha').valueAsDate = new Date();
+      document.getElementById('lugar').focus();
+    
+      mostrarGastos(gastos.length - 1);
+    }
+    
     function formatoGs(n) {
       return parseFloat(n).toLocaleString('es-PY', { style: 'currency', currency: 'PYG', minimumFractionDigits: 0 });
     }
-function mostrarGastos(focoIndex = null) {
-    // function mostrarGastos() {
+    
+    function mostrarGastos(focoIndex = null) {
       const texto = document.getElementById('filtroTexto').value.toLowerCase();
       const filtro = document.getElementById('filtroCategoria').value;
-
       const filtrados = gastos.filter(g => 
         (!filtro || g.categoria === filtro) &&
         (g.lugar.toLowerCase().includes(texto) || (g.nota || '').toLowerCase().includes(texto))
@@ -319,6 +309,7 @@ function mostrarGastos(focoIndex = null) {
         col.style.display = (col.style.display === 'none' || col.style.display === '') ? 'table-cell' : 'none';
       });
     }
+    
     function graficar(totales) {
       const ctx = document.getElementById('graficoGastos').getContext('2d');
       const categorias = Object.keys(totales);
@@ -378,7 +369,6 @@ function mostrarGastos(focoIndex = null) {
         location.reload();
       }
     }
-
     mostrarGastos();
   </script>
 </body>
