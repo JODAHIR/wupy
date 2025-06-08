@@ -188,23 +188,32 @@ function mostrarGastos(focoIndex = null) {
 
     tabla.innerHTML = `
         <thead><tr>
-          <th>Fecha</th><th>Categoría</th><th>Lugar</th><th>Monto</th><th>Des (%)</th><th>Reintegro (Gs)</th><th>A pagar</th><th>Nota</th><th>🆑</th><th>✏️</th>
+          <th class="text-center">Fecha</th>
+          <th class="text-center">Categoría</th>
+          <th class="text-center">Lugar</th>
+          <th class="text-center">Monto</th>
+          <th class="text-center">Des (%)</th>
+          <th class="text-center">Reintegro (Gs)</th>
+          <th class="text-center">A pagar</th>
+          <th class="text-center">Nota</th>
+          <th class="text-center">🆑</th>
+          <th class="text-center">✏️</th>
         </tr></thead><tbody>
         ${filtrados.map((g, i) => {
           const index = gastos.indexOf(g);
           const rowId = `gasto-${index}`;
           return `
             <tr id="${rowId}">
-                <td>${g.fecha}</td>
-                <td>${g.categoria}</td>
-                <td>${g.lugar}</td>
-                <td>${formatoGs(g.monto)}</td>
-                <td>${g.descuento}%</td>
-                <td>${formatoGs(g.monto * g.descuento / 100)}</td>
-                <td>${formatoGs(g.final)}</td>
+                <td class="text-center">${g.fecha}</td>
+                <td class="text-center">${g.categoria}</td>
+                <td class="text-center">${g.lugar}</td>
+                <td class="text-right">${formatoGs(g.monto)}</td>
+                <td class="text-right">${g.descuento}%</td>
+                <td class="text-right">${formatoGs(g.monto * g.descuento / 100)}</td>
+                <td class="text-right">${formatoGs(g.final)}</td>
                 <td>${g.nota || ""}</td>
-                <td> <button class="btn btn-sm btn-outline-primary" onclick="editarGasto(${index})">✏️</button></td>
-                <td><button class="btn btn-sm btn-outline-danger mt-1" onclick="eliminarGasto(${index})">🗑️</button></td>
+                <td class="text-center"> <button class="btn btn-sm btn-outline-primary" onclick="editarGasto(${index})">✏️</button></td>
+                <td class="text-center"><button class="btn btn-sm btn-outline-danger mt-1" onclick="eliminarGasto(${index})">🗑️</button></td>
               </tr>`;
           }).join('')}
         </tbody>`;
