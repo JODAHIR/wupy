@@ -129,14 +129,26 @@
       const fecha = document.getElementById('fecha').value;
       const nota = document.getElementById('nota').value;
       const final = monto * (1 - descuento / 100);
-
+    
       if (!monto || monto <= 0 || !fecha || !categoria || !lugar) return;
-
-      gastos.push({ categoria, lugar, monto, descuento, fecha, nota, final });
+    
+      const gasto = { categoria, lugar, monto, descuento, fecha, nota, final };
+      gastos.push(gasto);
       localStorage.setItem('gastos', JSON.stringify(gastos));
+      enviarAGoogleSheets(gasto); // 🔄 ENVIAR A GOOGLE SHEETS
       mostrarGastos();
     }
-
+    
+    function enviarAGoogleSheets(gasto) {
+      fetch("https://script.google.com/macros/s/AKfycbw5L3I0Lf5Na7wgVGOH-3g9QlDbAOIoi7cWFI7Sq2UYKCivpUOAHPggZBiIe5NbuAV9Rg/exec", {
+        method: "POST",
+        body: JSON.stringify(gasto),
+        headers: { "Content-Type": "application/json" }
+      })
+      .then(r => r.text())
+      .then(res => console.log("✅ Enviado a Sheets:", res))
+      .catch(err => console.error("❌ Error al enviar a Sheets:", err));
+    }
     
     function formatoGs(n) {
       return parseFloat(n).toLocaleString('es-PY', { style: 'currency', currency: 'PYG', minimumFractionDigits: 0 });
