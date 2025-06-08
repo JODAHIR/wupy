@@ -135,7 +135,6 @@
       const gasto = { categoria, lugar, monto, descuento, fecha, nota, final };
       gastos.push(gasto);
       localStorage.setItem('gastos', JSON.stringify(gastos));
-      enviarAGoogleSheets(gasto);
     }
     
     function enviarAGoogleSheets(gasto) {
