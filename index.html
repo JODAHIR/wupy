@@ -161,22 +161,35 @@
         <thead><tr>
           <th>Fecha</th><th>Categoría</th><th>Lugar</th><th>Monto</th><th>Des (%)</th><th>Reintegro (Gs)</th><th>A pagar</th><th>Nota</th>
         </tr></thead><tbody>
-        ${filtrados.map(g => `
-          <tr>
-            <td>${g.fecha}</td>
-            <td>${g.categoria}</td>
-            <td>${g.lugar}</td>
-            <td>${formatoGs(g.monto)}</td>
-            <td>${g.descuento}%</td>
-            <td>${formatoGs(g.monto * g.descuento / 100)}</td>
-            <td>${formatoGs(g.final)}</td>
-            <td>${g.nota || ""}</td>
-          </tr>`).join('')}
+          ${filtrados.map((g, i) => {
+            const index = gastos.indexOf(g);
+            return `
+              <tr>
+                <td>${g.fecha}</td>
+                <td>${g.categoria}</td>
+                <td>${g.lugar}</td>
+                <td>${formatoGs(g.monto)}</td>
+                <td>${g.descuento}%</td>
+                <td>${formatoGs(g.monto * g.descuento / 100)}</td>
+                <td>${formatoGs(g.final)}</td>
+                <td>
+                  ${g.nota || ""}
+                  <br>
+                  <button class="btn btn-sm btn-outline-danger mt-1" onclick="eliminarGasto(${index})">🗑️</button>
+                </td>
+              </tr>`;
+          }).join('')}
         </tbody>`;
 
       actualizarResumen(filtrados);
     }
-
+    function eliminarGasto(index) {
+      if (confirm('¿Eliminar este gasto?')) {
+        gastos.splice(index, 1);
+        localStorage.setItem('gastos', JSON.stringify(gastos));
+        mostrarGastos();
+      }
+    }
     function actualizarResumen(lista = gastos) {
       const resumen = document.getElementById("resumen");
       const totales = {};
