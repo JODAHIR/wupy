@@ -65,7 +65,7 @@
     <!-- Filtros -->
     <div class="row g-2 mb-3">
       <div class="col-12 col-sm-6">
-        <input type="text" id="filtroTexto" class="form-control" placeholder="🔍 Buscar..." oninput="mostrarGastos()">
+        <input type="text" id="filtroTexto" class="form-control" placeholder="🔍 Buscar" oninput="mostrarGastos()">
       </div>
       <div class="col-12 col-sm-6">
         <select id="filtroCategoria" class="form-select" onchange="mostrarGastos()">
@@ -135,13 +135,22 @@
       const gasto = { categoria, lugar, monto, descuento, fecha, nota, final };
       gastos.push(gasto);
       localStorage.setItem('gastos', JSON.stringify(gastos));
+      
+      // Resetear el formulario
+      document.getElementById('formGasto').reset();
+      document.getElementById('fecha').valueAsDate = new Date(); // Fecha actual por defecto
+      document.getElementById('lugar').focus(); // Enfocar al primer campo
+    
+      mostrarGastos(gastos.length - 1); // Pasar el índice del nuevo gasto
     }
+
+    
     
     function formatoGs(n) {
       return parseFloat(n).toLocaleString('es-PY', { style: 'currency', currency: 'PYG', minimumFractionDigits: 0 });
     }
-
-    function mostrarGastos() {
+function mostrarGastos(focoIndex = null) {
+    // function mostrarGastos() {
       const texto = document.getElementById('filtroTexto').value.toLowerCase();
       const filtro = document.getElementById('filtroCategoria').value;
 
@@ -157,14 +166,15 @@
         return;
       }
 
-      tabla.innerHTML = `
+    tabla.innerHTML = `
         <thead><tr>
           <th>Fecha</th><th>Categoría</th><th>Lugar</th><th>Monto</th><th>Des (%)</th><th>Reintegro (Gs)</th><th>A pagar</th><th>Nota</th><th>🆑</th>
         </tr></thead><tbody>
-          ${filtrados.map((g, i) => {
-            const index = gastos.indexOf(g);
-            return `
-              <tr>
+        ${filtrados.map((g, i) => {
+          const index = gastos.indexOf(g);
+          const rowId = `gasto-${index}`;
+          return `
+            <tr id="${rowId}">
                 <td>${g.fecha}</td>
                 <td>${g.categoria}</td>
                 <td>${g.lugar}</td>
@@ -177,8 +187,15 @@
               </tr>`;
           }).join('')}
         </tbody>`;
-
       actualizarResumen(filtrados);
+      if (focoIndex !== null) {
+        const row = document.getElementById(`gasto-${focoIndex}`);
+        if (row) {
+          row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          row.classList.add('table-success');
+          setTimeout(() => row.classList.remove('table-success'), 2000);
+        }
+      }
     }
     function eliminarGasto(index) {
       if (confirm('¿Eliminar este gasto?')) {
