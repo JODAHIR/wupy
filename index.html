@@ -135,8 +135,7 @@
       const gasto = { categoria, lugar, monto, descuento, fecha, nota, final };
       gastos.push(gasto);
       localStorage.setItem('gastos', JSON.stringify(gastos));
-      enviarAGoogleSheets(gasto); // 🔄 ENVIAR A GOOGLE SHEETS
-      mostrarGastos();
+      enviarAGoogleSheets(gasto);
     }
     
     function enviarAGoogleSheets(gasto) {
@@ -219,9 +218,9 @@
           <div class="col-12 col-md-6 col-lg-4 mb-3">
             <div class="border rounded p-3" style="background-color: ${colores[cat] || '#999'}10; border-color: ${colores[cat] || '#999'}">
               <h6 style="color: ${colores[cat] || '#999'}">${iconos[cat] || "📦"} ${cat}</h6>
-              <div>Asignado: <b>${formatoGs(asignado)}</b></div>
-              <div>Usado: <b>${formatoGs(usado)}</b></div>
-              <div>Restante: <b style="color: ${restante < 0 ? 'red' : 'green'}">${formatoGs(restante)}</b></div>
+              <div>🪙 Asignado: <b>${formatoGs(asignado)}</b></div>
+              <div>⛔ Usado: <b>${formatoGs(usado)}</b></div>
+              <div>⚠️ Saldo: <b style="color: ${restante < 0 ? 'red' : 'green'}">${formatoGs(restante)}</b></div>
             </div>
           </div>`;
       }).join("");
