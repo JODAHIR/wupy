@@ -172,11 +172,8 @@
                 <td>${g.descuento}%</td>
                 <td>${formatoGs(g.monto * g.descuento / 100)}</td>
                 <td>${formatoGs(g.final)}</td>
-                <td>
-                  ${g.nota || ""}
-                  <br>
-                  <button class="btn btn-sm btn-outline-danger mt-1" onclick="eliminarGasto(${index})">🗑️</button>
-                </td>
+                <td>${g.nota || ""}</td>
+                <td><button class="btn btn-sm btn-outline-danger mt-1" onclick="eliminarGasto(${index})">🗑️</button></td>
               </tr>`;
           }).join('')}
         </tbody>`;
