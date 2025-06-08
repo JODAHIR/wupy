@@ -49,11 +49,11 @@
         <div class="mb-3 row">
           <div class="col-6">
             <label class="form-label">💸 Monto (Gs)</label>
-            <input type="number" id="monto" class="form-control" required>
+            <input type="text" id="monto" class="form-control" required>
           </div>
           <div class="col-6">
             <label class="form-label">🔻 Descuento (%)</label>
-            <input type="number" id="descuento" class="form-control">
+            <input type="text" id="descuento" class="form-control">
           </div>
         </div>
         <div class="mb-3">
@@ -123,12 +123,12 @@
     document.getElementById('monto').addEventListener('input', function() {
       formatearMilesInput(this);
     });
-
+    
     document.getElementById('descuento').addEventListener('input', function() {
       formatearMilesInput(this);
     });
     document.getElementById('mesActual').innerText = new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
-  let indiceEdicion = null;
+    let indiceEdicion = null;
 
     function formatearMilesInput(input) {
       let valor = input.value.replace(/\D/g, ''); // elimina todo lo que no sea número
