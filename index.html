@@ -202,7 +202,7 @@
       resumen.innerHTML = Object.keys(totales).map(cat => {
         const usado = totales[cat];
         const asignado = presupuestos[cat];
-        const restante = asignado - usado;
+        const restante = asignado - (usado + descuento);
         return `
           <div class="col-12 col-md-6 col-lg-4 mb-3">
             <div class="border rounded p-3" style="background-color: ${colores[cat] || '#999'}10; border-color: ${colores[cat] || '#999'}">
