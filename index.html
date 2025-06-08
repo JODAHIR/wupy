@@ -137,21 +137,9 @@
       localStorage.setItem('gastos', JSON.stringify(gastos));
     }
     
-    function enviarAGoogleSheets(gasto) {
-      fetch("https://script.google.com/macros/s/AKfycbwMxSZT2nk8k-5Kjx5mYft4fxw8WmydEtwE6vMVyV31dkR6t_ttB0PeNJpxawAmqYfyLA/exec", {
-        method: "POST",
-        body: JSON.stringify(gasto),
-        headers: { "Content-Type": "application/json" }
-      })
-      .then(r => r.text())
-      .then(res => console.log("✅ Enviado a Sheets:", res))
-      .catch(err => console.error("❌ Error al enviar a Sheets:", err));
-    }
-    
     function formatoGs(n) {
       return parseFloat(n).toLocaleString('es-PY', { style: 'currency', currency: 'PYG', minimumFractionDigits: 0 });
     }
-
 
     function mostrarGastos() {
       const texto = document.getElementById('filtroTexto').value.toLowerCase();
