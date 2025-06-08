@@ -203,7 +203,7 @@ function mostrarGastos(focoIndex = null) {
     }
     
     function eliminarGasto(index) {
-      if (confirm('¿Eliminar este gasto?')) {
+      if (confirm('¿Eliminar el gasto?')) {
         gastos.splice(index, 1);
         localStorage.setItem('gastos', JSON.stringify(gastos));
         mostrarGastos();
@@ -236,12 +236,24 @@ function mostrarGastos(focoIndex = null) {
       });
        
       const colores = {
-        combustible: "#f44336", supermercado: "#2196F3", comida: "#FFC107", fiesta: "#9C27B0",
-        ocio: "#FF9800", otros: "#607D8B", monchis: "#800080", biggie: "#800000"
+        combustible: "#f44336",
+        supermercado: "#2196F3",
+        comida: "#FFC107",
+        fiesta: "#9C27B0",
+        ocio: "#FF9800",
+        otros: "#607D8B",
+        monchis: "#800080",
+        biggie: "#800000"
       };
       const iconos = {
-        combustible: "⛽", supermercado: "🛒", comida: "🍽️", fiesta: "🎉",
-        ocio: "🎟️", otros: "💊", monchis: "🏍️", biggie: "🅱️"
+        combustible: "⛽",
+        supermercado: "🛒",
+        comida: "🍽️",
+        fiesta: "🎉",
+        ocio: "🎟️",
+        otros: "💊",
+        monchis: "🏍️",
+        biggie: "🅱️"
       };
 
       resumen.innerHTML = Object.keys(totales).map(cat => {
