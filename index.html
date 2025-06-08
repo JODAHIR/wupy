@@ -120,22 +120,22 @@
 
     document.getElementById('fecha').valueAsDate = new Date();
     document.getElementById('monto').addEventListener('input', function() {
-  formatearMilesInput(this);
-});
+      formatearMilesInput(this);
+    });
 
-document.getElementById('descuento').addEventListener('input', function() {
-  formatearMilesInput(this);
-});
+    document.getElementById('descuento').addEventListener('input', function() {
+      formatearMilesInput(this);
+    });
     document.getElementById('mesActual').innerText = new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
   let indiceEdicion = null;
 
-    function formatearMilesInput(input) {
-  let valor = input.value.replace(/\D/g, ''); // eliminar todo lo que no sea dígito
+function formatearMilesInput(input) {
+  let valor = input.value.replace(/\D/g, ''); // elimina todo lo que no sea número
   if (!valor) {
     input.value = '';
     return;
   }
-  input.value = parseInt(valor, 10).toLocaleString('es-PY');
+  input.value = parseInt(valor, 10).toLocaleString('es-PY'); // genera 100.000.000
 }
     
 function agregarGasto() {
@@ -233,8 +233,8 @@ function mostrarGastos(focoIndex = null) {
     
       document.getElementById('categoria').value = g.categoria;
       document.getElementById('lugar').value = g.lugar;
-      document.getElementById('monto').value = g.monto;
-      document.getElementById('descuento').value = g.descuento;
+      document.getElementById('monto').value = Math.round(g.monto).toLocaleString('es-PY');
+      document.getElementById('descuento').value = Math.round(g.descuento).toLocaleString('es-PY');
       document.getElementById('fecha').value = g.fecha;
       document.getElementById('nota').value = g.nota;
     
