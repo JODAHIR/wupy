@@ -226,7 +226,7 @@ function mostrarGastos(focoIndex = null) {
                 <td class="ocultar-en-movil">${g.nota || ""}</td>
                 <td class="text-center"> <button class="btn btn-sm btn-outline-primary" onclick="editarGasto(${index})">✏️</button></td>
                 <td class="text-center"><button class="btn btn-sm btn-outline-danger mt-1" onclick="eliminarGasto(${index})">🗑️</button></td>
-                <td> <button class="btn btn-outline-secondary btn-sm" onclick="toggleDetalles()">👁️ Ver Detalles</button></td>
+                <td text-center><button class="btn btn-outline-secondary btn-sm" onclick="toggleDetalles()">Ver Detalles</button></td>
               </tr>`;
           }).join('')}
         </tbody>`;
