@@ -423,6 +423,15 @@ document.getElementById("inputCSV").addEventListener("change", function(e) {
 
   reader.readAsText(file);
 });
+
+function resetearGastos() {
+  if (confirm("¿Estás seguro de que querés borrar todos los gastos del mes?")) {
+    localStorage.removeItem('gastos');
+    gastos.length = 0; // vacía el array
+    mostrarGastos();
+  }
+}
+
 mostrarGastos();
   </script>
 </body>
