@@ -138,12 +138,12 @@
     let indiceEdicion = null;
 
     function formatearMilesInput(input) {
-      let valor = input.value.replace(/\D/g, ''); // elimina todo lo que no sea número
+      let valor = input.value.replace(/\D/g, '');
       if (!valor) {
         input.value = '';
         return;
       }
-      input.value = parseInt(valor, 10).toLocaleString('es-PY'); // genera 100.000.000
+      input.value = parseInt(valor, 10).toLocaleString('es-PY');
     }
         
     function agregarGasto() {
@@ -195,41 +195,55 @@
         return;
       }
 
-    tabla.innerHTML = `
-        <thead><tr>
-          <th class="text-center">Fecha</th>
-          <th class="ocultar-en-movil">Categoría</th>
-          <th class="text-center">Banco</th>
-          <th class="text-center">Lugar</th>
-          <th class="text-center">Monto</th>
-          <th class="ocultar-en-movil">Des (%)</th>
-          <th class="ocultar-en-movil">Reintegro (Gs)</th>
-          <th class="text-center">Total</th>
-          <th class="ocultar-en-movil">Nota</th>
-          <th class="text-center">✏️</th>
-          <th class="text-center">🆑</th>
-           <th class="text-center">🔽</th>
-        </tr></thead><tbody>
-        ${filtrados.map((g, i) => {
-          const index = gastos.indexOf(g);
-          const rowId = `gasto-${index}`;
-          return `
-            <tr id="${rowId}">
-                <td class="text-center">${g.fecha}</td>
-                <td class="ocultar-en-movil">${g.categoria}</td>
-                <td class="text-center">${g.entidad}</td>
-                <td class="text-center">${g.lugar}</td>
-                <td class="text-right">${formatoGs(g.monto)}</td>
-                <td class="ocultar-en-movil">${g.descuento}%</td>
-                <td class="ocultar-en-movil">${formatoGs(g.monto * g.descuento / 100)}</td>
-                <td class="text-right">${formatoGs(g.final)}</td>
-                <td class="ocultar-en-movil">${g.nota || ""}</td>
-                <td class="text-center"> <button class="btn btn-sm btn-outline-primary" onclick="editarGasto(${index})">✏️</button></td>
-                <td class="text-center"><button class="btn btn-sm btn-outline-danger mt-1" onclick="eliminarGasto(${index})">🗑️</button></td>
-                <td text-center><button class="btn btn-outline-secondary btn-sm " onclick="toggleDetalles()">Ver Detalles</button></td>
-              </tr>`;
-          }).join('')}
-        </tbody>`;
+	const totalMonto = filtrados.reduce((s, g) => s + g.monto, 0);
+	const totalReintegro = filtrados.reduce((s, g) => s + (g.monto * g.descuento / 100), 0);
+	const totalFinal = filtrados.reduce((s, g) => s + g.final, 0);
+
+	tabla.innerHTML = `
+	  <thead><tr>
+	    <th class="text-center">Fecha</th>
+	    <th class="ocultar-en-movil">Categoría</th>
+	    <th class="text-center">Banco</th>
+	    <th class="text-center">Lugar</th>
+	    <th class="text-center">Monto</th>
+	    <th class="ocultar-en-movil">Des (%)</th>
+	    <th class="ocultar-en-movil">Reintegro (Gs)</th>
+	    <th class="text-center">Total</th>
+	    <th class="ocultar-en-movil">Nota</th>
+	    <th class="text-center">✏️</th>
+	    <th class="text-center">🆑</th>
+	    <th class="text-center">🔽</th>
+	  </tr></thead><tbody>
+	  ${filtrados.map((g, i) => {
+	    const index = gastos.indexOf(g);
+	    const rowId = `gasto-${index}`;
+	    return `
+	      <tr id="${rowId}">
+		<td class="text-center">${g.fecha}</td>
+		<td class="ocultar-en-movil">${g.categoria}</td>
+		<td class="text-center">${g.entidad}</td>
+		<td class="text-center">${g.lugar}</td>
+		<td class="text-end">${formatoGs(g.monto)}</td>
+		<td class="ocultar-en-movil text-center">${g.descuento}%</td>
+		<td class="ocultar-en-movil text-end">${formatoGs(g.monto * g.descuento / 100)}</td>
+		<td class="text-end">${formatoGs(g.final)}</td>
+		<td class="ocultar-en-movil">${g.nota || ""}</td>
+		<td class="text-center"> <button class="btn btn-sm btn-outline-primary" onclick="editarGasto(${index})">✏️</button></td>
+		<td class="text-center"><button class="btn btn-sm btn-outline-danger mt-1" onclick="eliminarGasto(${index})">🗑️</button></td>
+		<td class="text-center"><button class="btn btn-outline-secondary btn-sm" onclick="toggleDetalles()">Ver Detalles</button></td>
+	      </tr>`;
+	  }).join('')}
+	  <tr class="table-warning fw-bold">
+	    <td colspan="4" class="text-end">TOTAL</td>
+	    <td class="text-end">${formatoGs(totalMonto)}</td>
+	    <td colspan="1"></td>
+	    <td class="ocultar-en-movil text-end">${formatoGs(totalReintegro)}</td>
+	    <td class="text-end">${formatoGs(totalFinal)}</td>
+	    <td colspan="4"></td>
+	  </tr>
+	</tbody>`;
+        
+        
       actualizarResumen(filtrados);
       if (focoIndex !== null) {
         const row = document.getElementById(`gasto-${focoIndex}`);
@@ -261,7 +275,6 @@
       document.getElementById('fecha').value = g.fecha;
       document.getElementById('nota').value = g.nota;
     
-      document.getElementById('lugar').focus();
     }
     
     function actualizarResumen(lista = gastos) {
@@ -274,6 +287,7 @@
       Object.keys(totales).forEach(cat => {
         if (!presupuestos[cat]) presupuestos[cat] = 1000000;
       });
+       
        
       const colores = {
         combustible: "#f44336",
@@ -358,31 +372,40 @@
       URL.revokeObjectURL(url);
     }
 
-    document.getElementById("inputCSV").addEventListener("change", function(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(event) {
-        const lines = event.target.result.split("\n").slice(1);
-        lines.forEach(line => {
-          const [lugar, categoria, fecha, monto, descuento, total] = line.split(",");
-          if (lugar && categoria && fecha) {
-            gastos.push({ lugar, categoria, fecha, monto: parseFloat(monto), descuento: parseFloat(descuento), final: parseFloat(total), nota: "Importado" });
-          }
+   document.getElementById("inputCSV").addEventListener("change", function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    const lines = event.target.result.trim().split("\n").slice(1); 
+    lines.forEach(line => {
+      const [lugar, categoria, entidad, fecha, montoStr, descuentoStr, totalStr] = line.split(",");
+
+      const monto = parseFloat(montoStr?.replace(/\./g, '').replace(',', '.')) || 0;
+      const descuento = parseFloat(descuentoStr?.replace(/\./g, '').replace(',', '.')) || 0;
+      const final = parseFloat(totalStr?.replace(/\./g, '').replace(',', '.')) || 0;
+
+      if (lugar && categoria && fecha) {
+        gastos.push({
+          lugar: lugar.trim(),
+          categoria: categoria.trim(),
+          entidad: entidad?.trim() || '',
+          fecha: fecha.trim(),
+          monto,
+          descuento,
+          final,
+          nota: "Importado"
         });
-        localStorage.setItem("gastos", JSON.stringify(gastos));
-        mostrarGastos();
-      };
-      reader.readAsText(file);
+      }
     });
 
-    function resetearGastos() {
-      if (confirm("¿Eliminar todos los gastos?")) {
-        localStorage.removeItem("gastos");
-        location.reload();
-      }
-    }
+    localStorage.setItem("gastos", JSON.stringify(gastos));
     mostrarGastos();
+  };
+
+  reader.readAsText(file);
+});
   </script>
 </body>
 </html>
