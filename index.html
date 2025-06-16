@@ -1,458 +1,475 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta content="WUPY" name="description">
-  <title>WUPY-JO</title>
-  <meta name="author" content="JCODAHIR">
-  <link href="favicon.ico" rel="icon">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-  .ocultar-en-movil {
-    display: none;
-  }
-  @media (min-width: 768px) {
-    .ocultar-en-movil {
-      display: table-cell;
-    }
-  }
-</style>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta content="WUPY" name="description">
+	<title>WUPY-JO</title>
+	<meta name="author" content="JCODAHIR">
+	<link href="favicon.ico" rel="icon">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<style>
+		.ocultar-en-movil {
+				    display: none;
+				  }
+				  @media (min-width: 768px) {
+				    .ocultar-en-movil {
+				      display: table-cell;
+				    }
+				  }
+		
+	</style>
 </head>
 <body class="bg-light">
-  <header class="bg-success text-white text-center py-3 mb-3 shadow-sm">
-    <h3>📊 Gastos WUPY's - <span id="mesActual"></span></h3>
-  </header>
-  <div class="container">
-    <!-- Formulario de Gasto -->
-    <form id="formGasto" class="card shadow-sm mb-4" onsubmit="agregarGasto(); return false;">
-      <div class="card-body">
-        <h5 class="card-title mb-3">📋 Agregar Gasto</h5>
-        <div class="mb-3">
-          <label class="form-label">📂 Categoría</label>
-          <select id="categoria" class="form-select" required>
-            <option value="combustible">⛽️ Combustible</option>
-            <option value="supermercado">🛒 Supermercado</option>
-            <option value="comida">🍽️ Comida</option>
-            <option value="fiesta">🎉 Fiesta</option>
-            <option value="ocio">🎟️ Entradas</option>
-            <option value="tienda">🛍️ Tienda</option>
-            <option value="otros">💊 Farmacia</option>
-            <option value="monchis">🏍️ Monchis</option>
-            <option value="biggie">🅱️ Biggie</option>
-          </select>
-        </div>
-        <div class="mb-3">
-	  <label class="form-label">🏦 Banco</label>
-	  <input type="text" id="entidad" class="form-control" required>
+	<header class="bg-success text-white text-center py-3 mb-3 shadow-sm">
+		<h3>📊 Gastos WUPY's - <span id="mesActual"></span></h3>
+	</header>
+	<div class="container">
+		<!-- Formulario de Gasto -->
+		<form id="formGasto" class="card shadow-sm mb-4" onsubmit="agregarGasto(); return false;">
+			<div class="card-body">
+				<div class="mb-3 row">
+					<div class="col-6">
+						<label class="form-label">📂 Categoría</label>
+						<select id="categoria" class="form-select" required>
+					    <option value="combustible">⛽️ Combustible</option>
+					    <option value="supermercado">🛒 Supermercado</option>
+					    <option value="comida">🍽️ Comida</option>
+					    <option value="fiesta">🎉 Fiesta</option>
+					    <option value="ocio">🎟️ Entradas</option>
+					    <option value="tienda">🛍️ Tienda</option>
+					    <option value="otros">💊 Farmacia</option>
+					    <option value="monchis">🏍️ Monchis</option>
+					    <option value="biggie">🅱️ Biggie</option>
+				        </select>
+					</div>
+
+					<div class="col-6">
+						<label class="form-label">🏦 Banco</label>
+						<input type="text" id="entidad" class="form-control" required>
+					</div>
+				</div>
+				<div class="mb-3 row">
+					<div class="col-6">
+						<label class="form-label">📍 Lugar</label>
+						<input type="text" id="lugar" class="form-control" required>
+					</div>
+					<div class="col-6">
+						<label class="form-label">📅 Fecha</label>
+						<input type="date" id="fecha" class="form-control" required>
+					</div>
+				</div>
+				<div class="mb-3 row">
+					<div class="col-6">
+						<label class="form-label">💸 Monto (Gs)</label>
+						<input type="text" id="monto" class="form-control" required>
+					</div>
+					<div class="col-6">
+						<label class="form-label">🔻 Descuento (%)</label>
+						<input type="text" id="descuento" class="form-control">
+					</div>
+				</div>
+
+				<div class="mb-3">
+					<label class="form-label">📝 Nota</label>
+					<textarea id="nota" class="form-control" rows="2"></textarea>
+				</div>
+				<div class="row g-2 mb-3">
+					<div class="col-12 col-sm-6">
+						<button type="submit" class="btn btn-success">💾 Agregar</button>
+						<button type="button" class="btn btn-outline-danger" onclick="resetearGastos()">🧹 Resetear Mes</button>
+					</div>
+				</div>
+			</div>
+		</form>
+
+		<div class="mb-4">
+			<h5>⬇️ Importar ⬆️ Exportar</h5>
+			<div class="d-flex flex-column flex-sm-row gap-2">
+				<button class="btn btn-outline-primary w-100" onclick="exportarCSV()">📤 Exportar CSV</button>
+				<input type="file" class="form-control w-100" id="inputCSV" accept=".csv">
+			</div>
+		</div>
+		<hr>
+		<h5>🗂️Resumen Gastos</h5>
+		<div class="row" id="resumen"></div>
+		<div class="table-responsive mt-4">
+			<div class="row g-2 mb-3">
+				<div class="col-12 col-sm-6">
+					<input type="text" id="filtroTexto" class="form-control" placeholder="🔍 Buscar" oninput="mostrarGastos()">
+				</div>
+				<div class="col-12 col-sm-6">
+					<select id="filtroCategoria" class="form-select" onchange="mostrarGastos()">
+					  <option value="">📂 Categorías</option>
+					  <option value="combustible">⛽️ Combustible</option>
+					  <option value="supermercado">🛒 Supermercado</option>
+					  <option value="comida">🍽️ Comida</option>
+					  <option value="fiesta">🎉 Fiesta</option>
+					  <option value="ocio">🎟️ Entradas</option>
+					  <option value="tienda">🛍️ Tienda</option>
+					  <option value="otros">💊 Farmacia</option>
+					  <option value="monchis">🏍️ Monchis</option>
+					  <option value="biggie">🅱️ Biggie</option>
+					</select>
+				</div>
+			</div>
+			<hr>
+			<h5> 📑 Detalle Gastos</h5>
+			<table class="table table-bordered table-hover" id="tablaGastos"></table>
+		</div>
+		<div class="chart my-4 text-center">
+			<canvas id="graficoGastos" height="300"></canvas>
+		</div>
 	</div>
-        <div class="mb-3">
-          <label class="form-label">📍 Lugar</label>
-          <input type="text" id="lugar" class="form-control" required>
-        </div>
-        <div class="mb-3 row">
-          <div class="col-6">
-            <label class="form-label">💸 Monto (Gs)</label>
-            <input type="text" id="monto" class="form-control" required>
-          </div>
-          <div class="col-6">
-            <label class="form-label">🔻 Descuento (%)</label>
-            <input type="text" id="descuento" class="form-control">
-          </div>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">📅 Fecha</label>
-          <input type="date" id="fecha" class="form-control" required>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">📝 Nota</label>
-          <textarea id="nota" class="form-control" rows="2"></textarea>
-        </div>
-    	<div class="row g-2 mb-3">
-        	<div class="col-12 col-sm-6">
-        	  <button type="submit" class="btn btn-success">💾 Agregar</button>
-       		   <button type="button" class="btn btn-outline-danger" onclick="resetearGastos()">🧹 Resetear Mes</button>
-        	</div>
-       </div>
-      </div>
-    </form>
-
-    <div class="mb-4">
-      <h5>⬇️ Importar ⬆️ Exportar</h5>
-      <div class="d-flex flex-column flex-sm-row gap-2">
-        <button class="btn btn-outline-primary w-100" onclick="exportarCSV()">📤 Exportar CSV</button>
-        <input type="file" class="form-control w-100" id="inputCSV" accept=".csv">
-      </div>
-    </div>
-    <hr>
-    <h5>🗂️Resumen Gastos</h5>
-    <div class="row" id="resumen"></div>
-    <div class="table-responsive mt-4">
-    <div class="row g-2 mb-3">
-      <div class="col-12 col-sm-6">
-        <input type="text" id="filtroTexto" class="form-control" placeholder="🔍 Buscar" oninput="mostrarGastos()">
-      </div>
-      <div class="col-12 col-sm-6">
-        <select id="filtroCategoria" class="form-select" onchange="mostrarGastos()">
-          <option value="">📂 Categorías</option>
-          <option value="combustible">⛽️ Combustible</option>
-          <option value="supermercado">🛒 Supermercado</option>
-          <option value="comida">🍽️ Comida</option>
-          <option value="fiesta">🎉 Fiesta</option>
-          <option value="ocio">🎟️ Entradas</option>
-          <option value="tienda">🛍️ Tienda</option>
-          <option value="otros">💊 Farmacia</option>
-          <option value="monchis">🏍️ Monchis</option>
-          <option value="biggie">🅱️ Biggie</option>
-        </select>
-      </div>
-    </div>
-    <hr>
-    <h5> 📑 Detalle Gastos</h5>
-    <table class="table table-bordered table-hover" id="tablaGastos"></table>
-    </div>
-    <div class="chart my-4 text-center">
-      <canvas id="graficoGastos" height="300"></canvas>
-    </div>
-  </div>
-  <script>
-    const gastos = JSON.parse(localStorage.getItem('gastos')) || [];
-    const presupuestos = JSON.parse(localStorage.getItem('presupuestos')) || {
-      combustible: 1000000,
-      supermercado: 1000000,
-      comida: 1000000,
-      fiesta: 1000000,
-      ocio: 1000000,
-      tienda: 1000000,
-      otros: 1000000,
-      monchis: 400000,
-      biggie: 1000000
-    };
-
-    document.getElementById('fecha').valueAsDate = new Date();
-    document.getElementById('monto').addEventListener('input', function() {
-      formatearMilesInput(this);
-    });
-    
-    document.getElementById('descuento').addEventListener('input', function() {
-      formatearMilesInput(this);
-    });
-    document.getElementById('mesActual').innerText = new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
-    let indiceEdicion = null;
-
-    function formatearMilesInput(input) {
-      let valor = input.value.replace(/\D/g, '');
-      if (!valor) {
-        input.value = '';
-        return;
-      }
-      input.value = parseInt(valor, 10).toLocaleString('es-PY');
-    }
-        
-    function agregarGasto() {
-      const categoria = document.getElementById('categoria').value;
-      const entidad = document.getElementById('entidad').value.trim();
-      const lugar = document.getElementById('lugar').value.trim();
-      const monto = parseFloat(document.getElementById('monto').value.replace(/\./g, '').replace(/,/g, '.'));
-      const descuento = parseFloat(document.getElementById('descuento').value.replace(/\./g, '').replace(/,/g, '.')) || 0;
-      const fecha = document.getElementById('fecha').value;
-      const nota = document.getElementById('nota').value;
-      const final = monto * (1 - descuento / 100);
-    
-      if (!monto || monto <= 0 || !fecha || !categoria || !lugar) return;
-    
-      const gasto = { categoria, entidad, lugar, monto, descuento, fecha, nota, final };
-    
-      if (indiceEdicion !== null) {
-        gastos[indiceEdicion] = gasto;
-        indiceEdicion = null;
-      } else {
-        gastos.push(gasto);
-      }
-    
-      localStorage.setItem('gastos', JSON.stringify(gastos));
-    
-      document.getElementById('formGasto').reset();
-      document.getElementById('fecha').valueAsDate = new Date();
-      document.getElementById('categoria').focus();
-    
-      mostrarGastos(gastos.length - 1);
-    }
-    
-    function formatoGs(n) {
-      return parseFloat(n).toLocaleString('es-PY', { style: 'currency', currency: 'PYG', minimumFractionDigits: 0 });
-    }
-    
-function mostrarGastos(focoIndex = null) {
-  const texto = document.getElementById('filtroTexto')?.value.toLowerCase() || '';
-  const filtro = document.getElementById('filtroCategoria')?.value || '';
-
-  const filtrados = gastos.filter(g =>
-    (!filtro || g.categoria === filtro) &&
-    (g.lugar?.toLowerCase().includes(texto) || (g.nota || '').toLowerCase().includes(texto))
-  );
-
-  const tabla = document.getElementById('tablaGastos');
-
-  if (!filtrados.length) {
-    tabla.innerHTML = `
-      <thead>
-        <tr><th colspan="12" class="text-center">Sin datos</th></tr>
-      </thead>
-    `;
-    actualizarResumen([]);
-    return;
-  }
-
-  const totalMonto = filtrados.reduce((s, g) => s + (g.monto || 0), 0);
-  const totalReintegro = filtrados.reduce((s, g) => s + ((g.monto || 0) * (g.descuento || 0) / 100), 0);
-  const totalFinal = filtrados.reduce((s, g) => s + (g.final || 0), 0);
-
-  tabla.innerHTML = `
-    <thead>
-      <tr>
-        <th class="text-center">Fecha</th>
-        <th class="ocultar-en-movil">Categoría</th>
-        <th class="text-center">Banco</th>
-        <th class="text-center">Lugar</th>
-        <th class="text-center">Monto</th>
-        <th class="ocultar-en-movil text-center">Des (%)</th>
-        <th class="ocultar-en-movil text-center">Reintegro (Gs)</th>
-        <th class="text-center">Total</th>
-        <th class="ocultar-en-movil text-center">Nota</th>
-        <th class="text-center">✏️</th>
-        <th class="text-center">🆑</th>
-        <th class="text-center">🔽</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${filtrados.map((g, i) => {
-        const index = gastos.indexOf(g);
-        const rowId = `gasto-${index}`;
-        return `
-          <tr id="${rowId}">
-            <td class="text-center">${g.fecha}</td>
-            <td class="ocultar-en-movil">${g.categoria}</td>
-            <td class="text-center">${g.entidad || ''}</td>
-            <td class="text-center">${g.lugar}</td>
-            <td class="ocultar-en-movil text-center">${g.descuento || 0}%</td>
-            <td class="text-end">${formatoGs(g.monto)}</td>
-            <td class="ocultar-en-movil text-end">${formatoGs((g.monto || 0) * (g.descuento || 0) / 100)}</td>
-            <td class="text-end">${formatoGs(g.final)}</td>
-            <td class="ocultar-en-movil">${g.nota || ''}</td>
-            <td class="text-center">
-              <button class="btn btn-sm btn-outline-primary" onclick="editarGasto(${index})">✏️</button>
-            </td>
-            <td class="text-center">
-              <button class="btn btn-sm btn-outline-danger" onclick="eliminarGasto(${index})">🗑️</button>
-            </td>
-            <td class="text-center">
-              <button class="btn btn-outline-secondary btn-sm" onclick="toggleDetalles()">Ver Detalles</button>
-            </td>
-          </tr>
-        `;
-      }).join('')}
-      <tr class="table-warning fw-bold">
-        <td colspan="5" class="text-end">TOTAL</td>
-        <td class="text-end">${formatoGs(totalMonto)}</td>
-        <td class="ocultar-en-movil text-end">${formatoGs(totalReintegro)}</td>
-        <td class="text-end">${formatoGs(totalFinal)}</td>
-        <td colspan="5"></td>
-      </tr>
-    </tbody>
-  `;
-
-  actualizarResumen(filtrados);
-
-  if (focoIndex !== null) {
-    const row = document.getElementById(`gasto-${focoIndex}`);
-    if (row) {
-      row.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      row.classList.add('table-success');
-      setTimeout(() => row.classList.remove('table-success'), 2000);
-    }
-  }
-}
-
-    function eliminarGasto(index) {
-      if (confirm('¿Eliminar el gasto?')) {
-        gastos.splice(index, 1);
-        localStorage.setItem('gastos', JSON.stringify(gastos));
-        mostrarGastos();
-      }
-    }
-    
-function editarGasto(index) {
-  const g = gastos[index];
-  indiceEdicion = index;
-
-  document.getElementById('categoria').value = g.categoria;
-  document.getElementById('entidad').value = g.entidad;
-  document.getElementById('lugar').value = g.lugar;
-  document.getElementById('monto').value = Math.round(g.monto).toLocaleString('es-PY');
-  document.getElementById('descuento').value = Math.round(g.descuento).toLocaleString('es-PY');
-  document.getElementById('fecha').value = g.fecha;
-  document.getElementById('nota').value = g.nota;
-
-  // Foco después de rellenar todo
-  setTimeout(() => {
-    document.getElementById('lugar').focus();
-  }, 50);
-}
-
-
-    function actualizarResumen(lista = gastos) {
-      const resumen = document.getElementById("resumen");
-      const totales = {};
-      lista.forEach(g => {
-        if (!totales[g.categoria]) totales[g.categoria] = 0;
-        totales[g.categoria] += g.monto;
-      });
-      Object.keys(totales).forEach(cat => {
-        if (!presupuestos[cat]) presupuestos[cat] = 1000000;
-      });
-       
-       
-      const colores = {
-        combustible: "#f44336",
-        supermercado: "#2196F3",
-        comida: "#FFC107",
-        fiesta: "#d45087",
-        ocio: "#FF9800",
-        tienda: "#2f4b7c",
-        otros: "#607D8B",
-        monchis: "#800080",
-        biggie: "#800000"
-      };
-      const iconos = {
-        combustible: "⛽",
-        supermercado: "🛒",
-        comida: "🍽️",
-        fiesta: "🎉",
-        ocio: "🎟️",
-        tienda: "🛍️",
-        otros: "💊",
-        monchis: "🏍️",
-        biggie: "🅱️"
-      };
-
-      resumen.innerHTML = Object.keys(totales).map(cat => {
-        const usado = totales[cat];
-        const asignado = presupuestos[cat];
-        const restante = asignado - usado;
-        return `
-          <div class="col-12 col-md-6 col-lg-4 mb-3">
-            <div class="border rounded p-3" style="background-color: ${colores[cat] || '#999'}10; border-color: ${colores[cat] || '#999'}">
-              <h6 style="color: ${colores[cat] || '#999'}">${iconos[cat] || "📦"} ${cat}</h6>
-              <div>🪙 Asignado: <b>${formatoGs(asignado)}</b></div>
-              <div>⛔ Usado: <b>${formatoGs(usado)}</b></div>
-              <div>⚠️ Saldo: <b style="color: ${restante < 0 ? 'red' : 'green'}">${formatoGs(restante)}</b></div>
-            </div>
-          </div>`;
-      }).join("");
-
-      graficar(totales);
-    }
-    
-    function toggleDetalles() {
-      const columnas = document.querySelectorAll('.ocultar-en-movil');
-      columnas.forEach(col => {
-        col.style.display = (col.style.display === 'none' || col.style.display === '') ? 'table-cell' : 'none';
-      });
-    }
-    
-    function graficar(totales) {
-      const ctx = document.getElementById('graficoGastos').getContext('2d');
-      const categorias = Object.keys(totales);
-      const datos = Object.values(totales);
-      const colores = categorias.map(cat => ({
-        combustible: "#f44336", supermercado: "#2196F3", comida: "#FFC107", fiesta: "#d45087",
-        ocio: "#FF9800", tienda: "#2f4b7c", otros: "#607D8B", monchis: "#800080", biggie: "#800000"
-      }[cat] || "#999"));
-
-      if (window.chart) window.chart.destroy();
-      window.chart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: categorias,
-          datasets: [{
-            data: datos,
-            backgroundColor: colores
-          }]
-        },
-        options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
-      });
-    }
-
-function exportarCSV() {
-  const rows = [
-    ["Lugar","Categoría","Banco","Fecha","Monto","Descuento","Total"],
-    ...gastos.map(g => [
-      g.lugar,
-      g.categoria,
-      g.entidad,
-      g.fecha,
-      Math.round(g.monto),      // monto sin decimales
-      Math.round(g.descuento),  // descuento sin decimales
-      Math.round(g.final)       // total sin decimales
-    ])
-  ];
-  
-  const csv = rows.map(r => r.join(",")).join("\n");
-  const blob = new Blob([csv], { type: "text/csv" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "gastos.csv";
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-document.getElementById("inputCSV").addEventListener("change", function(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = function(event) {
-    const lines = event.target.result.trim().split("\n").slice(1); // Quitamos encabezado
-    lines.forEach(line => {
-      const [lugar, categoria, entidad, fecha, montoStr, descuentoStr, totalStr] = line.split(",");
-
-      const monto = parseFloat(montoStr?.replace(/\./g, '').replace(',', '.')) || 0;
-      const descuento = parseFloat(descuentoStr?.replace(/\./g, '').replace(',', '.')) || 0;
-      const final = parseFloat(totalStr?.replace(/\./g, '').replace(',', '.')) || 0;
-
-      if (lugar && categoria && fecha) {
-        gastos.push({
-          lugar: lugar.trim(),
-          categoria: categoria.trim(),
-          entidad: entidad?.trim() || '',
-          fecha: fecha.trim(),
-          monto,
-          descuento,
-          final,
-          nota: "Importado"
-        });
-      }
-    });
-
-    localStorage.setItem("gastos", JSON.stringify(gastos));
-    mostrarGastos();
-  };
-
-  reader.readAsText(file);
-});
-
-function resetearGastos() {
-  if (confirm("¿Estás seguro de que querés borrar todos los gastos del mes?")) {
-    localStorage.removeItem('gastos');
-    gastos.length = 0; // vacía el array
-    mostrarGastos();
-  }
-}
-
-mostrarGastos();
-  </script>
+	<script>
+		const gastos = JSON.parse(localStorage.getItem('gastos')) || [];
+				    const presupuestos = JSON.parse(localStorage.getItem('presupuestos')) || {
+				      combustible: 1000000,
+				      supermercado: 1000000,
+				      comida: 1000000,
+				      fiesta: 1000000,
+				      ocio: 1000000,
+				      tienda: 1000000,
+				      otros: 1000000,
+				      monchis: 400000,
+				      biggie: 1000000
+				    };
+				
+				    document.getElementById('fecha').valueAsDate = new Date();
+				    document.getElementById('monto').addEventListener('input', function() {
+				      formatearMilesInput(this);
+				    });
+				    
+				    document.getElementById('descuento').addEventListener('input', function() {
+				      formatearMilesInput(this);
+				    });
+				    document.getElementById('mesActual').innerText = new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+				    let indiceEdicion = null;
+				
+				    function formatearMilesInput(input) {
+				      let valor = input.value.replace(/\D/g, '');
+				      if (!valor) {
+				        input.value = '';
+				        return;
+				      }
+				      input.value = parseInt(valor, 10).toLocaleString('es-PY');
+				    }
+				        
+				    function agregarGasto() {
+				      const categoria = document.getElementById('categoria').value;
+				      const entidad = document.getElementById('entidad').value.trim();
+				      const lugar = document.getElementById('lugar').value.trim();
+				      const monto = parseFloat(document.getElementById('monto').value.replace(/\./g, '').replace(/,/g, '.'));
+				      const descuento = parseFloat(document.getElementById('descuento').value.replace(/\./g, '').replace(/,/g, '.')) || 0;
+				      const fecha = document.getElementById('fecha').value;
+				      const nota = document.getElementById('nota').value;
+				      const final = monto * (1 - descuento / 100);
+				    
+				      if (!monto || monto <= 0 || !fecha || !categoria || !lugar) return;
+				    
+				      const gasto = { categoria, entidad, lugar, monto, descuento, fecha, nota, final };
+				    
+				      if (indiceEdicion !== null) {
+				        gastos[indiceEdicion] = gasto;
+				        indiceEdicion = null;
+				      } else {
+				        gastos.push(gasto);
+				      }
+				    
+				      localStorage.setItem('gastos', JSON.stringify(gastos));
+				    
+				      document.getElementById('formGasto').reset();
+				      document.getElementById('fecha').valueAsDate = new Date();
+				      document.getElementById('categoria').focus();
+				    
+				      mostrarGastos(gastos.length - 1);
+				    }
+				    
+				    function formatoGs(n) {
+				      return parseFloat(n).toLocaleString('es-PY', { style: 'currency', currency: 'PYG', minimumFractionDigits: 0 });
+				    }
+				    
+				function mostrarGastos(focoIndex = null) {
+				  const texto = document.getElementById('filtroTexto')?.value.toLowerCase() || '';
+				  const filtro = document.getElementById('filtroCategoria')?.value || '';
+				
+				  const filtrados = gastos.filter(g =>
+				    (!filtro || g.categoria === filtro) &&
+				    (g.lugar?.toLowerCase().includes(texto) || (g.nota || '').toLowerCase().includes(texto))
+				  );
+				
+				  const tabla = document.getElementById('tablaGastos');
+				
+				  if (!filtrados.length) {
+				    tabla.innerHTML = `
+				      <thead>
+				        <tr><th colspan="12" class="text-center">Sin datos</th></tr>
+				      </thead>
+				    `;
+				    actualizarResumen([]);
+				    return;
+				  }
+				
+				  const totalMonto = filtrados.reduce((s, g) => s + (g.monto || 0), 0);
+				  const totalReintegro = filtrados.reduce((s, g) => s + ((g.monto || 0) * (g.descuento || 0) / 100), 0);
+				  const totalFinal = filtrados.reduce((s, g) => s + (g.final || 0), 0);
+				
+				  tabla.innerHTML = `
+				    <thead>
+				      <tr>
+				        <th class="text-center">Fecha</th>
+				        <th class="ocultar-en-movil">Categoría</th>
+				        <th class="text-center">Banco</th>
+				        <th class="text-center">Lugar</th>
+				        <th class="text-center">Monto</th>
+				        <th class="ocultar-en-movil text-center">Des (%)</th>
+				        <th class="ocultar-en-movil text-center">Reintegro (Gs)</th>
+				        <th class="text-center">Total</th>
+				        <th class="ocultar-en-movil text-center">Nota</th>
+				        <th class="text-center">✏️</th>
+				        <th class="text-center">🆑</th>
+				        <th class="text-center">🔽</th>
+				      </tr>
+				    </thead>
+				    <tbody>
+				      ${filtrados.map((g, i) => {
+				        const index = gastos.indexOf(g);
+				        const rowId = `gasto-${index}`;
+				        return `
+				          <tr id="${rowId}">
+				            <td class="text-center">${g.fecha}</td>
+				            <td class="ocultar-en-movil">${g.categoria}</td>
+				            <td class="text-center">${g.entidad || ''}</td>
+				            <td class="text-center">${g.lugar}</td>
+				            <td class="ocultar-en-movil text-center">${g.descuento || 0}%</td>
+				            <td class="text-end">${formatoGs(g.monto)}</td>
+				            <td class="ocultar-en-movil text-end">${formatoGs((g.monto || 0) * (g.descuento || 0) / 100)}</td>
+				            <td class="text-end">${formatoGs(g.final)}</td>
+				            <td class="ocultar-en-movil">${g.nota || ''}</td>
+				            <td class="text-center">
+				              <button class="btn btn-sm btn-outline-primary" onclick="editarGasto(${index})">✏️</button>
+				            </td>
+				            <td class="text-center">
+				              <button class="btn btn-sm btn-outline-danger" onclick="eliminarGasto(${index})">🗑️</button>
+				            </td>
+				            <td class="text-center">
+				              <button class="btn btn-outline-secondary btn-sm" onclick="toggleDetalles()">Ver Detalles</button>
+				            </td>
+				          </tr>
+				        `;
+				      }).join('')}
+				      <tr class="table-warning fw-bold">
+				        <td colspan="5" class="text-end">TOTAL</td>
+				        <td class="text-end">${formatoGs(totalMonto)}</td>
+				        <td class="ocultar-en-movil text-end">${formatoGs(totalReintegro)}</td>
+				        <td class="text-end">${formatoGs(totalFinal)}</td>
+				        <td colspan="5"></td>
+				      </tr>
+				    </tbody>
+				  `;
+				
+				  actualizarResumen(filtrados);
+				
+				  if (focoIndex !== null) {
+				    const row = document.getElementById(`gasto-${focoIndex}`);
+				    if (row) {
+				      row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+				      row.classList.add('table-success');
+				      setTimeout(() => row.classList.remove('table-success'), 2000);
+				    }
+				  }
+				}
+				
+				document.addEventListener('DOMContentLoaded', () => {
+				  const inputFecha = document.getElementById('fecha');
+				  const hoy = new Date();
+				  const yyyy = hoy.getFullYear();
+				  const mm = String(hoy.getMonth() + 1).padStart(2, '0');
+				  const dd = String(hoy.getDate()).padStart(2, '0');
+				  inputFecha.value = `${yyyy}-${mm}-${dd}`;
+				});
+				
+				
+				    function eliminarGasto(index) {
+				      if (confirm('¿Eliminar el gasto?')) {
+					gastos.splice(index, 1);
+					localStorage.setItem('gastos', JSON.stringify(gastos));
+					mostrarGastos();
+				      }
+				    }
+				    
+					function editarGasto(index) {
+					  const g = gastos[index];
+					  indiceEdicion = index;
+		
+					  document.getElementById('categoria').value = g.categoria;
+					  document.getElementById('entidad').value = g.entidad;
+					  document.getElementById('lugar').value = g.lugar;
+					  document.getElementById('monto').value = Math.round(g.monto).toLocaleString('es-PY');
+					  document.getElementById('descuento').value = Math.round(g.descuento).toLocaleString('es-PY');
+					  document.getElementById('fecha').value = g.fecha;
+					  document.getElementById('nota').value = g.nota;
+		
+					  setTimeout(() => {
+					    document.getElementById('lugar').focus();
+					  }, 50);
+					}
+				
+				
+				    function actualizarResumen(lista = gastos) {
+				      const resumen = document.getElementById("resumen");
+				      const totales = {};
+				      lista.forEach(g => {
+				        if (!totales[g.categoria]) totales[g.categoria] = 0;
+				        totales[g.categoria] += g.monto;
+				      });
+				      Object.keys(totales).forEach(cat => {
+				        if (!presupuestos[cat]) presupuestos[cat] = 1000000;
+				      });
+				       
+				       
+				      const colores = {
+				        combustible: "#f44336",
+				        supermercado: "#2196F3",
+				        comida: "#FFC107",
+				        fiesta: "#d45087",
+				        ocio: "#FF9800",
+				        tienda: "#2f4b7c",
+				        otros: "#607D8B",
+				        monchis: "#800080",
+				        biggie: "#800000"
+				      };
+				      const iconos = {
+				        combustible: "⛽",
+				        supermercado: "🛒",
+				        comida: "🍽️",
+				        fiesta: "🎉",
+				        ocio: "🎟️",
+				        tienda: "🛍️",
+				        otros: "💊",
+				        monchis: "🏍️",
+				        biggie: "🅱️"
+				      };
+				
+				      resumen.innerHTML = Object.keys(totales).map(cat => {
+				        const usado = totales[cat];
+				        const asignado = presupuestos[cat];
+				        const restante = asignado - usado;
+				        return `
+				          <div class="col-12 col-md-6 col-lg-4 mb-3">
+				            <div class="border rounded p-3" style="background-color: ${colores[cat] || '#999'}10; border-color: ${colores[cat] || '#999'}">
+				              <h6 style="color: ${colores[cat] || '#999'}">${iconos[cat] || "📦"} ${cat}</h6>
+				              <div>🪙 Asignado: <b>${formatoGs(asignado)}</b></div>
+				              <div>⛔ Usado: <b>${formatoGs(usado)}</b></div>
+				              <div>⚠️ Saldo: <b style="color: ${restante < 0 ? 'red' : 'green'}">${formatoGs(restante)}</b></div>
+				            </div>
+				          </div>`;
+				      }).join("");
+				
+				      graficar(totales);
+				    }
+				    
+				    function toggleDetalles() {
+				      const columnas = document.querySelectorAll('.ocultar-en-movil');
+				      columnas.forEach(col => {
+				        col.style.display = (col.style.display === 'none' || col.style.display === '') ? 'table-cell' : 'none';
+				      });
+				    }
+				    
+				    function graficar(totales) {
+				      const ctx = document.getElementById('graficoGastos').getContext('2d');
+				      const categorias = Object.keys(totales);
+				      const datos = Object.values(totales);
+				      const colores = categorias.map(cat => ({
+				        combustible: "#f44336", supermercado: "#2196F3", comida: "#FFC107", fiesta: "#d45087",
+				        ocio: "#FF9800", tienda: "#2f4b7c", otros: "#607D8B", monchis: "#800080", biggie: "#800000"
+				      }[cat] || "#999"));
+				
+				      if (window.chart) window.chart.destroy();
+				      window.chart = new Chart(ctx, {
+				        type: 'bar',
+				        data: {
+				          labels: categorias,
+				          datasets: [{
+				            data: datos,
+				            backgroundColor: colores
+				          }]
+				        },
+				        options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+				      });
+				    }
+				
+				function exportarCSV() {
+				  const rows = [
+				    ["Lugar","Categoría","Banco","Fecha","Monto","Descuento","Total"],
+				    ...gastos.map(g => [
+				      g.lugar,
+				      g.categoria,
+				      g.entidad,
+				      g.fecha,
+				      Math.round(g.monto),      
+				      Math.round(g.descuento),  
+				      Math.round(g.final)       
+				    ])
+				  ];
+				  
+				  const csv = rows.map(r => r.join(",")).join("\n");
+				  const blob = new Blob([csv], { type: "text/csv" });
+				  const url = URL.createObjectURL(blob);
+				  const a = document.createElement("a");
+				  a.href = url;
+				  a.download = "gastos.csv";
+				  a.click();
+				  URL.revokeObjectURL(url);
+				}
+				
+				document.getElementById("inputCSV").addEventListener("change", function(e) {
+				  const file = e.target.files[0];
+				  if (!file) return;
+				
+				  const reader = new FileReader();
+				  reader.onload = function(event) {
+				    const lines = event.target.result.trim().split("\n").slice(1); 
+				    lines.forEach(line => {
+				      const [lugar, categoria, entidad, fecha, montoStr, descuentoStr, totalStr] = line.split(",");
+				
+				      const monto = parseFloat(montoStr?.replace(/\./g, '').replace(',', '.')) || 0;
+				      const descuento = parseFloat(descuentoStr?.replace(/\./g, '').replace(',', '.')) || 0;
+				      const final = parseFloat(totalStr?.replace(/\./g, '').replace(',', '.')) || 0;
+				
+				      if (lugar && categoria && fecha) {
+				        gastos.push({
+				          lugar: lugar.trim(),
+				          categoria: categoria.trim(),
+				          entidad: entidad?.trim() || '',
+				          fecha: fecha.trim(),
+				          monto,
+				          descuento,
+				          final,
+				          nota: "Importado"
+				        });
+				      }
+				    });
+				
+				    localStorage.setItem("gastos", JSON.stringify(gastos));
+				    mostrarGastos();
+				  };
+				
+				  reader.readAsText(file);
+				});
+				
+				function resetearGastos() {
+				  if (confirm("¿Estás seguro de que querés borrar todos los gastos del mes?")) {
+				    localStorage.removeItem('gastos');
+				    gastos.length = 0;
+				    mostrarGastos();
+				  }
+				}
+				
+				mostrarGastos();
+				
+		
+	</script>
 </body>
 </html>
