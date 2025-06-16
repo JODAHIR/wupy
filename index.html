@@ -280,20 +280,25 @@ function mostrarGastos(focoIndex = null) {
       }
     }
     
-    function editarGasto(index) {
-      const g = gastos[index];
-      indiceEdicion = index;
-    
-      document.getElementById('categoria').value = g.categoria;
-      document.getElementById('entidad').value = g.entidad;
-      document.getElementById('lugar').value = g.lugar;
-      document.getElementById('monto').value = Math.round(g.monto).toLocaleString('es-PY');
-      document.getElementById('descuento').value = Math.round(g.descuento).toLocaleString('es-PY');
-      document.getElementById('fecha').value = g.fecha;
-      document.getElementById('nota').value = g.nota;
-    
-    }
-    
+function editarGasto(index) {
+  const g = gastos[index];
+  indiceEdicion = index;
+
+  document.getElementById('categoria').value = g.categoria;
+  document.getElementById('entidad').value = g.entidad;
+  document.getElementById('lugar').value = g.lugar;
+  document.getElementById('monto').value = Math.round(g.monto).toLocaleString('es-PY');
+  document.getElementById('descuento').value = Math.round(g.descuento).toLocaleString('es-PY');
+  document.getElementById('fecha').value = g.fecha;
+  document.getElementById('nota').value = g.nota;
+
+  // Foco después de rellenar todo
+  setTimeout(() => {
+    document.getElementById('lugar').focus();
+  }, 50);
+}
+
+
     function actualizarResumen(lista = gastos) {
       const resumen = document.getElementById("resumen");
       const totales = {};
