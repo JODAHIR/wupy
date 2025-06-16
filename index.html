@@ -76,10 +76,22 @@
       </div>
     </form>
 
-    <div class="row g-2 mb-3">
+    <div class="mb-4">
+      <h5>⬇️ Importar ⬆️ Exportar</h5>
+      <div class="d-flex flex-column flex-sm-row gap-2">
+        <button class="btn btn-outline-primary w-100" onclick="exportarCSV()">📤 Exportar CSV</button>
+        <input type="file" class="form-control w-100" id="inputCSV" accept=".csv">
+      </div>
+    </div>
+    <hr>
+    <h5>🗂️Resumen Gastos</h5>
+    <div class="row" id="resumen"></div>
+    <div class="table-responsive mt-4">
+        <div class="row g-2 mb-3">
       <div class="col-12 col-sm-6">
         <input type="text" id="filtroTexto" class="form-control" placeholder="🔍 Buscar" oninput="mostrarGastos()">
       </div>
+      
       <div class="col-12 col-sm-6">
         <select id="filtroCategoria" class="form-select" onchange="mostrarGastos()">
           <option value="">📂 Categorías</option>
@@ -95,17 +107,8 @@
         </select>
       </div>
     </div>
-
-    <div class="mb-4">
-      <h5>⬇️ Importar / Exportar</h5>
-      <div class="d-flex flex-column flex-sm-row gap-2">
-        <button class="btn btn-outline-primary w-100" onclick="exportarCSV()">📤 Exportar CSV</button>
-        <input type="file" class="form-control w-100" id="inputCSV" accept=".csv">
-      </div>
-    </div>
-    <hr>
-    <div class="row" id="resumen"></div>
-    <div class="table-responsive mt-4">
+        <hr>
+              <h5> 📑 Detalle Gastos</h5>
       <table class="table table-bordered table-hover" id="tablaGastos"></table>
     </div>
     <div class="chart my-4 text-center">
@@ -213,10 +216,10 @@ function mostrarGastos(focoIndex = null) {
         <th class="text-center">Banco</th>
         <th class="text-center">Lugar</th>
         <th class="text-center">Monto</th>
-        <th class="ocultar-en-movil">Des (%)</th>
-        <th class="ocultar-en-movil">Reintegro (Gs)</th>
+        <th class="ocultar-en-movil text-center">Des (%)</th>
+        <th class="ocultar-en-movil text-center">Reintegro (Gs)</th>
         <th class="text-center">Total</th>
-        <th class="ocultar-en-movil">Nota</th>
+        <th class="ocultar-en-movil text-center">Nota</th>
         <th class="text-center">✏️</th>
         <th class="text-center">🆑</th>
         <th class="text-center">🔽</th>
@@ -232,8 +235,8 @@ function mostrarGastos(focoIndex = null) {
             <td class="ocultar-en-movil">${g.categoria}</td>
             <td class="text-center">${g.entidad || ''}</td>
             <td class="text-center">${g.lugar}</td>
-            <td class="text-end">${formatoGs(g.monto)}</td>
             <td class="ocultar-en-movil text-center">${g.descuento || 0}%</td>
+            <td class="text-end">${formatoGs(g.monto)}</td>
             <td class="ocultar-en-movil text-end">${formatoGs((g.monto || 0) * (g.descuento || 0) / 100)}</td>
             <td class="text-end">${formatoGs(g.final)}</td>
             <td class="ocultar-en-movil">${g.nota || ''}</td>
@@ -250,12 +253,11 @@ function mostrarGastos(focoIndex = null) {
         `;
       }).join('')}
       <tr class="table-warning fw-bold">
-        <td colspan="4" class="text-end">TOTAL</td>
+        <td colspan="5" class="text-end">TOTAL</td>
         <td class="text-end">${formatoGs(totalMonto)}</td>
-        <td class="ocultar-en-movil"></td>
         <td class="ocultar-en-movil text-end">${formatoGs(totalReintegro)}</td>
         <td class="text-end">${formatoGs(totalFinal)}</td>
-        <td colspan="4"></td>
+        <td colspan="5"></td>
       </tr>
     </tbody>
   `;
@@ -315,9 +317,9 @@ function editarGasto(index) {
         combustible: "#f44336",
         supermercado: "#2196F3",
         comida: "#FFC107",
-        fiesta: "#9C27B0",
+        fiesta: "#d45087",
         ocio: "#FF9800",
-        tienda: "#FFC304",
+        tienda: "#2f4b7c",
         otros: "#607D8B",
         monchis: "#800080",
         biggie: "#800000"
@@ -364,8 +366,8 @@ function editarGasto(index) {
       const categorias = Object.keys(totales);
       const datos = Object.values(totales);
       const colores = categorias.map(cat => ({
-        combustible: "#f44336", supermercado: "#2196F3", comida: "#FFC107", fiesta: "#9C27B0",
-        ocio: "#FF9800", tienda: "#FFC304", otros: "#607D8B", monchis: "#800080", biggie: "#800000"
+        combustible: "#f44336", supermercado: "#2196F3", comida: "#FFC107", fiesta: "#d45087",
+        ocio: "#FF9800", tienda: "#2f4b7c", otros: "#607D8B", monchis: "#800080", biggie: "#800000"
       }[cat] || "#999"));
 
       if (window.chart) window.chart.destroy();
@@ -382,17 +384,29 @@ function editarGasto(index) {
       });
     }
 
-    function exportarCSV() {
-      const rows = [["Lugar","Categoría","Banco","Fecha","Monto","Descuento","Total"], ...gastos.map(g => [g.lugar, g.categoria, g.entidad, g.fecha, g.monto, g.descuento, g.final])];
-      const csv = rows.map(r => r.join(",")).join("\n");
-      const blob = new Blob([csv], { type: "text/csv" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "gastos.csv";
-      a.click();
-      URL.revokeObjectURL(url);
-    }
+function exportarCSV() {
+  const rows = [
+    ["Lugar","Categoría","Banco","Fecha","Monto","Descuento","Total"],
+    ...gastos.map(g => [
+      g.lugar,
+      g.categoria,
+      g.entidad,
+      g.fecha,
+      Math.round(g.monto),      // monto sin decimales
+      Math.round(g.descuento),  // descuento sin decimales
+      Math.round(g.final)       // total sin decimales
+    ])
+  ];
+  
+  const csv = rows.map(r => r.join(",")).join("\n");
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "gastos.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 document.getElementById("inputCSV").addEventListener("change", function(e) {
   const file = e.target.files[0];
