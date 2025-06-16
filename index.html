@@ -69,10 +69,12 @@
           <label class="form-label">📝 Nota</label>
           <textarea id="nota" class="form-control" rows="2"></textarea>
         </div>
-        <div class="d-grid gap-2">
-          <button type="submit" class="btn btn-success">💾 Agregar Gasto</button>
-          <button type="button" class="btn btn-outline-danger" onclick="resetearGastos()">🧹 Resetear Mes</button>
-        </div>
+    	<div class="row g-2 mb-3">
+        	<div class="col-12 col-sm-6">
+        	  <button type="submit" class="btn btn-success">💾 Agregar</button>
+       		   <button type="button" class="btn btn-outline-danger" onclick="resetearGastos()">🧹 Resetear Mes</button>
+        	</div>
+       </div>
       </div>
     </form>
 
@@ -87,11 +89,10 @@
     <h5>🗂️Resumen Gastos</h5>
     <div class="row" id="resumen"></div>
     <div class="table-responsive mt-4">
-        <div class="row g-2 mb-3">
+    <div class="row g-2 mb-3">
       <div class="col-12 col-sm-6">
         <input type="text" id="filtroTexto" class="form-control" placeholder="🔍 Buscar" oninput="mostrarGastos()">
       </div>
-      
       <div class="col-12 col-sm-6">
         <select id="filtroCategoria" class="form-select" onchange="mostrarGastos()">
           <option value="">📂 Categorías</option>
@@ -107,9 +108,9 @@
         </select>
       </div>
     </div>
-        <hr>
-              <h5> 📑 Detalle Gastos</h5>
-      <table class="table table-bordered table-hover" id="tablaGastos"></table>
+    <hr>
+    <h5> 📑 Detalle Gastos</h5>
+    <table class="table table-bordered table-hover" id="tablaGastos"></table>
     </div>
     <div class="chart my-4 text-center">
       <canvas id="graficoGastos" height="300"></canvas>
