@@ -37,11 +37,16 @@
             <option value="comida">🍽️ Comida</option>
             <option value="fiesta">🎉 Fiesta</option>
             <option value="ocio">🎟️ Entradas</option>
+            <option value="tienda">🛍️ Tienda</option>
             <option value="otros">💊 Farmacia</option>
             <option value="monchis">🏍️ Monchis</option>
             <option value="biggie">🅱️ Biggie</option>
           </select>
         </div>
+        <div class="mb-3">
+	  <label class="form-label">🏦 Banco</label>
+	  <input type="text" id="entidad" class="form-control" required>
+	</div>
         <div class="mb-3">
           <label class="form-label">📍 Lugar</label>
           <input type="text" id="lugar" class="form-control" required>
@@ -83,6 +88,7 @@
           <option value="comida">🍽️ Comida</option>
           <option value="fiesta">🎉 Fiesta</option>
           <option value="ocio">🎟️ Entradas</option>
+          <option value="tienda">🛍️ Tienda</option>
           <option value="otros">💊 Farmacia</option>
           <option value="monchis">🏍️ Monchis</option>
           <option value="biggie">🅱️ Biggie</option>
@@ -114,6 +120,7 @@
       comida: 1000000,
       fiesta: 1000000,
       ocio: 1000000,
+      tienda: 1000000,
       otros: 1000000,
       monchis: 400000,
       biggie: 1000000
@@ -141,6 +148,7 @@
         
     function agregarGasto() {
       const categoria = document.getElementById('categoria').value;
+      const entidad = document.getElementById('entidad').value.trim();
       const lugar = document.getElementById('lugar').value.trim();
       const monto = parseFloat(document.getElementById('monto').value.replace(/\./g, '').replace(/,/g, '.'));
       const descuento = parseFloat(document.getElementById('descuento').value.replace(/\./g, '').replace(/,/g, '.')) || 0;
@@ -150,7 +158,7 @@
     
       if (!monto || monto <= 0 || !fecha || !categoria || !lugar) return;
     
-      const gasto = { categoria, lugar, monto, descuento, fecha, nota, final };
+      const gasto = { categoria, entidad, lugar, monto, descuento, fecha, nota, final };
     
       if (indiceEdicion !== null) {
         gastos[indiceEdicion] = gasto;
@@ -163,7 +171,7 @@
     
       document.getElementById('formGasto').reset();
       document.getElementById('fecha').valueAsDate = new Date();
-      document.getElementById('lugar').focus();
+      document.getElementById('categoria').focus();
     
       mostrarGastos(gastos.length - 1);
     }
@@ -191,14 +199,15 @@
         <thead><tr>
           <th class="text-center">Fecha</th>
           <th class="ocultar-en-movil">Categoría</th>
+          <th class="text-center">Banco</th>
           <th class="text-center">Lugar</th>
           <th class="text-center">Monto</th>
-          <th class="text-center">Des (%)</th>
-          <th class="text-center">Reintegro (Gs)</th>
-          <th class="text-center">A pagar</th>
+          <th class="ocultar-en-movil">Des (%)</th>
+          <th class="ocultar-en-movil">Reintegro (Gs)</th>
+          <th class="text-center">Total</th>
           <th class="ocultar-en-movil">Nota</th>
-          <th class="text-center">🆑</th>
           <th class="text-center">✏️</th>
+          <th class="text-center">🆑</th>
            <th class="text-center">🔽</th>
         </tr></thead><tbody>
         ${filtrados.map((g, i) => {
@@ -208,15 +217,16 @@
             <tr id="${rowId}">
                 <td class="text-center">${g.fecha}</td>
                 <td class="ocultar-en-movil">${g.categoria}</td>
+                <td class="text-center">${g.entidad}</td>
                 <td class="text-center">${g.lugar}</td>
                 <td class="text-right">${formatoGs(g.monto)}</td>
-                <td class="text-right">${g.descuento}%</td>
-                <td class="text-right">${formatoGs(g.monto * g.descuento / 100)}</td>
+                <td class="ocultar-en-movil">${g.descuento}%</td>
+                <td class="ocultar-en-movil">${formatoGs(g.monto * g.descuento / 100)}</td>
                 <td class="text-right">${formatoGs(g.final)}</td>
                 <td class="ocultar-en-movil">${g.nota || ""}</td>
                 <td class="text-center"> <button class="btn btn-sm btn-outline-primary" onclick="editarGasto(${index})">✏️</button></td>
                 <td class="text-center"><button class="btn btn-sm btn-outline-danger mt-1" onclick="eliminarGasto(${index})">🗑️</button></td>
-                <td text-center><button class="btn btn-outline-secondary btn-sm" onclick="toggleDetalles()">Ver Detalles</button></td>
+                <td text-center><button class="btn btn-outline-secondary btn-sm " onclick="toggleDetalles()">Ver Detalles</button></td>
               </tr>`;
           }).join('')}
         </tbody>`;
@@ -244,6 +254,7 @@
       indiceEdicion = index;
     
       document.getElementById('categoria').value = g.categoria;
+      document.getElementById('entidad').value = g.entidad;
       document.getElementById('lugar').value = g.lugar;
       document.getElementById('monto').value = Math.round(g.monto).toLocaleString('es-PY');
       document.getElementById('descuento').value = Math.round(g.descuento).toLocaleString('es-PY');
@@ -270,6 +281,7 @@
         comida: "#FFC107",
         fiesta: "#9C27B0",
         ocio: "#FF9800",
+        tienda: "#FFC304",
         otros: "#607D8B",
         monchis: "#800080",
         biggie: "#800000"
@@ -280,6 +292,7 @@
         comida: "🍽️",
         fiesta: "🎉",
         ocio: "🎟️",
+        tienda: "🛍️",
         otros: "💊",
         monchis: "🏍️",
         biggie: "🅱️"
@@ -316,7 +329,7 @@
       const datos = Object.values(totales);
       const colores = categorias.map(cat => ({
         combustible: "#f44336", supermercado: "#2196F3", comida: "#FFC107", fiesta: "#9C27B0",
-        ocio: "#FF9800", otros: "#607D8B", monchis: "#800080", biggie: "#800000"
+        ocio: "#FF9800", tienda: "#FFC304", otros: "#607D8B", monchis: "#800080", biggie: "#800000"
       }[cat] || "#999"));
 
       if (window.chart) window.chart.destroy();
@@ -334,7 +347,7 @@
     }
 
     function exportarCSV() {
-      const rows = [["Lugar","Categoría","Fecha","Monto","Descuento","Total"], ...gastos.map(g => [g.lugar, g.categoria, g.fecha, g.monto, g.descuento, g.final])];
+      const rows = [["Lugar","Categoría","Banco","Fecha","Monto","Descuento","Total"], ...gastos.map(g => [g.lugar, g.categoria, g.entidad, g.fecha, g.monto, g.descuento, g.final])];
       const csv = rows.map(r => r.join(",")).join("\n");
       const blob = new Blob([csv], { type: "text/csv" });
       const url = URL.createObjectURL(blob);
