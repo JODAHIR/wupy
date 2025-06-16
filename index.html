@@ -180,81 +180,98 @@
       return parseFloat(n).toLocaleString('es-PY', { style: 'currency', currency: 'PYG', minimumFractionDigits: 0 });
     }
     
-    function mostrarGastos(focoIndex = null) {
-      const texto = document.getElementById('filtroTexto').value.toLowerCase();
-      const filtro = document.getElementById('filtroCategoria').value;
-      const filtrados = gastos.filter(g => 
-        (!filtro || g.categoria === filtro) &&
-        (g.lugar.toLowerCase().includes(texto) || (g.nota || '').toLowerCase().includes(texto))
-      );
+function mostrarGastos(focoIndex = null) {
+  const texto = document.getElementById('filtroTexto')?.value.toLowerCase() || '';
+  const filtro = document.getElementById('filtroCategoria')?.value || '';
 
-      const tabla = document.getElementById('tablaGastos');
-      if (!filtrados.length) {
-        tabla.innerHTML = '<tr><td colspan="8" class="text-center">Sin datos</td></tr>';
-        actualizarResumen(filtrados);
-        return;
-      }
+  const filtrados = gastos.filter(g =>
+    (!filtro || g.categoria === filtro) &&
+    (g.lugar?.toLowerCase().includes(texto) || (g.nota || '').toLowerCase().includes(texto))
+  );
 
-	const totalMonto = filtrados.reduce((s, g) => s + g.monto, 0);
-	const totalReintegro = filtrados.reduce((s, g) => s + (g.monto * g.descuento / 100), 0);
-	const totalFinal = filtrados.reduce((s, g) => s + g.final, 0);
+  const tabla = document.getElementById('tablaGastos');
 
-	tabla.innerHTML = `
-	  <thead><tr>
-	    <th class="text-center">Fecha</th>
-	    <th class="ocultar-en-movil">Categoría</th>
-	    <th class="text-center">Banco</th>
-	    <th class="text-center">Lugar</th>
-	    <th class="text-center">Monto</th>
-	    <th class="ocultar-en-movil">Des (%)</th>
-	    <th class="ocultar-en-movil">Reintegro (Gs)</th>
-	    <th class="text-center">Total</th>
-	    <th class="ocultar-en-movil">Nota</th>
-	    <th class="text-center">✏️</th>
-	    <th class="text-center">🆑</th>
-	    <th class="text-center">🔽</th>
-	  </tr></thead><tbody>
-	  ${filtrados.map((g, i) => {
-	    const index = gastos.indexOf(g);
-	    const rowId = `gasto-${index}`;
-	    return `
-	      <tr id="${rowId}">
-		<td class="text-center">${g.fecha}</td>
-		<td class="ocultar-en-movil">${g.categoria}</td>
-		<td class="text-center">${g.entidad}</td>
-		<td class="text-center">${g.lugar}</td>
-		<td class="text-end">${formatoGs(g.monto)}</td>
-		<td class="ocultar-en-movil text-center">${g.descuento}%</td>
-		<td class="ocultar-en-movil text-end">${formatoGs(g.monto * g.descuento / 100)}</td>
-		<td class="text-end">${formatoGs(g.final)}</td>
-		<td class="ocultar-en-movil">${g.nota || ""}</td>
-		<td class="text-center"> <button class="btn btn-sm btn-outline-primary" onclick="editarGasto(${index})">✏️</button></td>
-		<td class="text-center"><button class="btn btn-sm btn-outline-danger mt-1" onclick="eliminarGasto(${index})">🗑️</button></td>
-		<td class="text-center"><button class="btn btn-outline-secondary btn-sm" onclick="toggleDetalles()">Ver Detalles</button></td>
-	      </tr>`;
-	  }).join('')}
-	  <tr class="table-warning fw-bold">
-	    <td colspan="4" class="text-end">TOTAL</td>
-	    <td class="text-end">${formatoGs(totalMonto)}</td>
-	    <td colspan="1"></td>
-	    <td class="ocultar-en-movil text-end">${formatoGs(totalReintegro)}</td>
-	    <td class="text-end">${formatoGs(totalFinal)}</td>
-	    <td colspan="4"></td>
-	  </tr>
-	</tbody>`;
-        
-        
-      actualizarResumen(filtrados);
-      if (focoIndex !== null) {
-        const row = document.getElementById(`gasto-${focoIndex}`);
-        if (row) {
-          row.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          row.classList.add('table-success');
-          setTimeout(() => row.classList.remove('table-success'), 2000);
-        }
-      }
+  if (!filtrados.length) {
+    tabla.innerHTML = `
+      <thead>
+        <tr><th colspan="12" class="text-center">Sin datos</th></tr>
+      </thead>
+    `;
+    actualizarResumen([]);
+    return;
+  }
+
+  const totalMonto = filtrados.reduce((s, g) => s + (g.monto || 0), 0);
+  const totalReintegro = filtrados.reduce((s, g) => s + ((g.monto || 0) * (g.descuento || 0) / 100), 0);
+  const totalFinal = filtrados.reduce((s, g) => s + (g.final || 0), 0);
+
+  tabla.innerHTML = `
+    <thead>
+      <tr>
+        <th class="text-center">Fecha</th>
+        <th class="ocultar-en-movil">Categoría</th>
+        <th class="text-center">Banco</th>
+        <th class="text-center">Lugar</th>
+        <th class="text-center">Monto</th>
+        <th class="ocultar-en-movil">Des (%)</th>
+        <th class="ocultar-en-movil">Reintegro (Gs)</th>
+        <th class="text-center">Total</th>
+        <th class="ocultar-en-movil">Nota</th>
+        <th class="text-center">✏️</th>
+        <th class="text-center">🆑</th>
+        <th class="text-center">🔽</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${filtrados.map((g, i) => {
+        const index = gastos.indexOf(g);
+        const rowId = `gasto-${index}`;
+        return `
+          <tr id="${rowId}">
+            <td class="text-center">${g.fecha}</td>
+            <td class="ocultar-en-movil">${g.categoria}</td>
+            <td class="text-center">${g.entidad || ''}</td>
+            <td class="text-center">${g.lugar}</td>
+            <td class="text-end">${formatoGs(g.monto)}</td>
+            <td class="ocultar-en-movil text-center">${g.descuento || 0}%</td>
+            <td class="ocultar-en-movil text-end">${formatoGs((g.monto || 0) * (g.descuento || 0) / 100)}</td>
+            <td class="text-end">${formatoGs(g.final)}</td>
+            <td class="ocultar-en-movil">${g.nota || ''}</td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-outline-primary" onclick="editarGasto(${index})">✏️</button>
+            </td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-outline-danger" onclick="eliminarGasto(${index})">🗑️</button>
+            </td>
+            <td class="text-center">
+              <button class="btn btn-outline-secondary btn-sm" onclick="toggleDetalles()">Ver Detalles</button>
+            </td>
+          </tr>
+        `;
+      }).join('')}
+      <tr class="table-warning fw-bold">
+        <td colspan="4" class="text-end">TOTAL</td>
+        <td class="text-end">${formatoGs(totalMonto)}</td>
+        <td class="ocultar-en-movil"></td>
+        <td class="ocultar-en-movil text-end">${formatoGs(totalReintegro)}</td>
+        <td class="text-end">${formatoGs(totalFinal)}</td>
+        <td colspan="4"></td>
+      </tr>
+    </tbody>
+  `;
+
+  actualizarResumen(filtrados);
+
+  if (focoIndex !== null) {
+    const row = document.getElementById(`gasto-${focoIndex}`);
+    if (row) {
+      row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      row.classList.add('table-success');
+      setTimeout(() => row.classList.remove('table-success'), 2000);
     }
-    
+  }
+}
+
     function eliminarGasto(index) {
       if (confirm('¿Eliminar el gasto?')) {
         gastos.splice(index, 1);
@@ -372,13 +389,13 @@
       URL.revokeObjectURL(url);
     }
 
-   document.getElementById("inputCSV").addEventListener("change", function(e) {
+document.getElementById("inputCSV").addEventListener("change", function(e) {
   const file = e.target.files[0];
   if (!file) return;
 
   const reader = new FileReader();
   reader.onload = function(event) {
-    const lines = event.target.result.trim().split("\n").slice(1); 
+    const lines = event.target.result.trim().split("\n").slice(1); // Quitamos encabezado
     lines.forEach(line => {
       const [lugar, categoria, entidad, fecha, montoStr, descuentoStr, totalStr] = line.split(",");
 
@@ -406,6 +423,7 @@
 
   reader.readAsText(file);
 });
+mostrarGastos();
   </script>
 </body>
 </html>
