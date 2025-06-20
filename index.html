@@ -237,10 +237,17 @@
     let subtotalMonto = 0;
     let subtotalReintegro = 0;
     let subtotalFinal = 0;
+   
+	  // Convertir fecha a formato legible
+    const fechaFormateada = new Date(fechaUltima).toLocaleDateString('es-ES', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
 
     contenido += `
       <thead class="table-success">
-        <tr><th colspan="12" class="text-start">🏦 Banco: ${entidad}</th></tr>
+        <tr><th colspan="12" class="text-start">🏦 Banco: ${entidad} 📅 Último gasto: ${fechaFormateada}</th></tr>
         <tr>
           <th class="text-center">Fecha</th>
           <th class="ocultar-en-movil">Categoría</th>
