@@ -18,7 +18,7 @@
 				      display: table-cell;
 				    }
 				  }
-				  .footer-fijo {
+				    .footer-fijo {
 				    padding-top: 20px;
 				    margin-top:25px;
 				    bottom: 0;
@@ -28,6 +28,10 @@
 				    background-color: #28a745; /* Cambiá este color por el que quieras */
 				    z-index: 9999;
 				  }
+				  .cabecera{
+				      position: fixed;
+				  }
+		
 	</style>
 </head>
 <body class="bg-light">
@@ -200,148 +204,186 @@
 				    }
 				    
 				function mostrarGastos(focoIndex = null) {
-  const texto = document.getElementById('filtroTexto')?.value.toLowerCase() || '';
-  const filtro = document.getElementById('filtroCategoria')?.value || '';
-  const tabla = document.getElementById('tablaGastos');
-
-  const filtrados = gastos.filter(g =>
-    (!filtro || g.categoria === filtro) &&
-    (g.lugar?.toLowerCase().includes(texto) || (g.nota || '').toLowerCase().includes(texto))
-  );
-
-  if (!filtrados.length) {
-    tabla.innerHTML = `
-      <thead>
-        <tr><th colspan="12" class="text-center">Sin datos</th></tr>
-      </thead>
-    `;
-    actualizarResumen([]);
-    return;
-  }
-
-  // Agrupar por entidad
-  const entidades = {};
-  filtrados.forEach(g => {
-    const key = g.entidad?.trim() || "Sin banco";
-    if (!entidades[key]) entidades[key] = [];
-    entidades[key].push(g);
-  });
-
-  let contenido = '';
-  let totalMonto = 0;
-  let totalReintegro = 0;
-  let totalFinal = 0;
-
-  for (const entidad in entidades) {
-    const grupo = entidades[entidad];
-    let subtotalMonto = 0;
-    let subtotalReintegro = 0;
-    let subtotalFinal = 0;
-   
-	  // Convertir fecha a formato legible
-    const fechaFormateada = new Date(fechaUltima).toLocaleDateString('es-ES', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    });
-
-    contenido += `
-      <thead class="table-success">
-        <tr><th colspan="12" class="text-start">🏦 Banco: ${entidad} 📅 Último gasto: ${fechaFormateada}</th></tr>
-        <tr>
-          <th class="text-center">Fecha</th>
-          <th class="ocultar-en-movil">Categoría</th>
-          <th class="text-center">Banco</th>
-          <th class="text-center">Lugar</th>
-          <th class="text-center">Monto</th>
-          <th class="ocultar-en-movil text-center">Des (%)</th>
-          <th class="ocultar-en-movil text-center">Reintegro (Gs)</th>
-          <th class="text-center">Total</th>
-          <th class="ocultar-en-movil text-center">Nota</th>
-          <th class="text-center">✏️</th>
-          <th class="text-center">🆑</th>
-          <th class="text-center">🔽</th>
-        </tr>
-      </thead>
-      <tbody>
-    `;
-
-    grupo.forEach(g => {
-      const index = gastos.indexOf(g);
-      const rowId = `gasto-${index}`;
-      const reintegro = (g.monto || 0) * (g.descuento || 0) / 100;
-
-      subtotalMonto += g.monto || 0;
-      subtotalReintegro += reintegro;
-      subtotalFinal += g.final || 0;
-
-      totalMonto += g.monto || 0;
-      totalReintegro += reintegro;
-      totalFinal += g.final || 0;
-
-      contenido += `
-        <tr id="${rowId}">
-          <td class="text-center">${g.fecha}</td>
-          <td class="ocultar-en-movil">${g.categoria}</td>
-          <td class="text-center">${g.entidad || ''}</td>
-          <td class="text-center">${g.lugar}</td>
-          <td class="text-end">${formatoGs(g.monto)}</td>
-          <td class="ocultar-en-movil text-center">${g.descuento || 0}%</td>
-          <td class="ocultar-en-movil text-end">${formatoGs(reintegro)}</td>
-          <td class="text-end">${formatoGs(g.final)}</td>
-          <td class="ocultar-en-movil">${g.nota || ''}</td>
-          <td class="text-center">
-            <button class="btn btn-sm btn-outline-primary" onclick="editarGasto(${index})">✏️</button>
-          </td>
-          <td class="text-center">
-            <button class="btn btn-sm btn-outline-danger" onclick="eliminarGasto(${index})">🗑️</button>
-          </td>
-          <td class="text-center">
-            <button class="btn btn-outline-secondary btn-sm" onclick="toggleDetalles()">Ver Detalles</button>
-          </td>
-        </tr>
-      `;
-    });
-
-    contenido += `
-        <tr class="table-info fw-bold">
-          <td colspan="4" class="text-end">Subtotal</td>
-          <td class="text-end">${formatoGs(subtotalMonto)}</td>
-          <td class="ocultar-en-movil"></td>
-          <td class="ocultar-en-movil text-end">${formatoGs(subtotalReintegro)}</td>
-          <td class="text-end">${formatoGs(subtotalFinal)}</td>
-          <td colspan="4"></td>
-        </tr>
-      </tbody>
-    `;
-  }
-
-  contenido += `
-    <tfoot>
-      <tr class="table-warning fw-bold">
-        <td colspan="4" class="text-end">TOTAL GENERAL</td>
-        <td class="text-end">${formatoGs(totalMonto)}</td>
-        <td class="ocultar-en-movil"></td>
-        <td class="ocultar-en-movil text-end">${formatoGs(totalReintegro)}</td>
-        <td class="text-end">${formatoGs(totalFinal)}</td>
-        <td colspan="4"></td>
-      </tr>
-    </tfoot>
-  `;
-
-  tabla.innerHTML = contenido;
-
-  actualizarResumen(filtrados);
-
-  if (focoIndex !== null) {
-    const row = document.getElementById(`gasto-${focoIndex}`);
-    if (row) {
-      row.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      row.classList.add('table-success');
-      setTimeout(() => row.classList.remove('table-success'), 2000);
-    }
-  }
-}
+				  // Función parseFecha igual que antes...
+				  function parseFechaDDMMYYYY(fechaStr) {
+				    if (!fechaStr) return null;
+				    const partes = fechaStr.split('/');
+				    if (partes.length !== 3) return null;
+				    const [dd, mm, yyyy] = partes;
+				    return new Date(+yyyy, +mm - 1, +dd);
+				  }
+				
+				  const texto = document.getElementById('filtroTexto')?.value.toLowerCase() || '';
+				  const filtro = document.getElementById('filtroCategoria')?.value || '';
+				  const tabla = document.getElementById('tablaGastos');
+				
+				  const filtrados = gastos.filter(g =>
+				    (!filtro || g.categoria === filtro) &&
+				    (g.lugar?.toLowerCase().includes(texto) || (g.nota || '').toLowerCase().includes(texto))
+				  );
+				
+				  if (!filtrados.length) {
+				    tabla.innerHTML = `
+				      <thead>
+				        <tr><th colspan="13" class="text-center">Sin datos</th></tr>
+				      </thead>
+				    `;
+				    actualizarResumen([]);
+				    return;
+				  }
+				
+				  // Agrupar por entidad
+				  const entidades = {};
+				  filtrados.forEach(g => {
+				    const key = g.entidad?.trim() || "Sin banco";
+				    if (!entidades[key]) entidades[key] = [];
+				    entidades[key].push(g);
+				  });
+				
+				  let contenido = '';
+				  let totalMonto = 0;
+				  let totalReintegro = 0;
+				  let totalFinal = 0;
+				
+				  // Para calcular promedio general de descuento
+				  let sumaDescuentosGeneral = 0;
+				  let contadorDescuentosGeneral = 0;
+				
+				  for (const entidad in entidades) {
+				    const grupo = entidades[entidad];
+				
+				    // Fechas (igual que antes)
+				    let fechas = grupo
+				      .map(g => parseFechaDDMMYYYY(g.fecha))
+				      .filter(d => d instanceof Date && !isNaN(d));
+				    if (fechas.length === 0) {
+				      fechas = grupo
+				        .map(g => new Date(g.fecha))
+				        .filter(d => d instanceof Date && !isNaN(d));
+				    }
+				    const fechaMax = fechas.length ? new Date(Math.max(...fechas)) : null;
+				    const fechaFormateada = fechaMax
+				      ? fechaMax.toLocaleDateString('es-PY', { day: '2-digit', month: '2-digit', year: 'numeric' })
+				      : '';
+				
+				    // Calcular promedio descuento de la entidad
+				    const sumaDescuentosEntidad = grupo.reduce((acc, g) => acc + (g.descuento || 0), 0);
+				    const promedioDescuentoEntidad = grupo.length ? (sumaDescuentosEntidad / grupo.length) : 0;
+				
+				    // Acumular para promedio general
+				    sumaDescuentosGeneral += sumaDescuentosEntidad;
+				    contadorDescuentosGeneral += grupo.length;
+				
+				    let subtotalMonto = 0;
+				    let subtotalReintegro = 0;
+				    let subtotalFinal = 0;
+				
+				    contenido += `
+				      <thead class="table-success">
+				        <tr>
+				          <th colspan="13" class="text-start">
+				            🏦 Banco: ${entidad} &nbsp;&nbsp; 📅 Último gasto: ${fechaFormateada} &nbsp;&nbsp; 🏷️ Promedio Descuento: ${promedioDescuentoEntidad.toFixed(2)}%
+				          </th>
+				        </tr>
+				        <tr>
+				          <th class="text-center">Fecha</th>
+				          <th class="ocultar-en-movil">Categoría</th>
+				          <th class="text-center">Banco</th>
+				          <th class="text-center">Lugar</th>
+				          <th class="text-center">Monto</th>
+				          <th class="ocultar-en-movil text-center">Des (%)</th>
+				          <th class="ocultar-en-movil text-center">Reintegro (Gs)</th>
+				          <th class="text-center">Total</th>
+				          <th class="ocultar-en-movil text-center">Nota</th>
+				          <th class="text-center">✏️</th>
+				          <th class="text-center">🆑</th>
+				          <th class="text-center">🔽</th>
+				        </tr>
+				      </thead>
+				      <tbody>
+				    `;
+				
+				    grupo.forEach(g => {
+				      const index = gastos.indexOf(g);
+				      const rowId = `gasto-${index}`;
+				      const reintegro = (g.monto || 0) * (g.descuento || 0) / 100;
+				
+				      subtotalMonto += g.monto || 0;
+				      subtotalReintegro += reintegro;
+				      subtotalFinal += g.final || 0;
+				
+				      totalMonto += g.monto || 0;
+				      totalReintegro += reintegro;
+				      totalFinal += g.final || 0;
+				
+				      contenido += `
+				        <tr id="${rowId}">
+				          <td class="text-center">${g.fecha}</td>
+				          <td class="ocultar-en-movil">${g.categoria}</td>
+				          <td class="text-center">${g.entidad || ''}</td>
+				          <td class="text-center">${g.lugar}</td>
+				          <td class="text-end">${formatoGs(g.monto)}</td>
+				          <td class="ocultar-en-movil text-center">${g.descuento || 0}%</td>
+				          <td class="ocultar-en-movil text-end">${formatoGs(reintegro)}</td>
+				          <td class="text-end">${formatoGs(g.final)}</td>
+				          <td class="ocultar-en-movil">${g.nota || ''}</td>
+				          <td class="text-center">
+				            <button class="btn btn-sm btn-outline-primary" onclick="editarGasto(${index})">✏️</button>
+				          </td>
+				          <td class="text-center">
+				            <button class="btn btn-sm btn-outline-danger" onclick="eliminarGasto(${index})">🗑️</button>
+				          </td>
+				          <td class="text-center">
+				            <button class="btn btn-outline-secondary btn-sm" onclick="toggleDetalles()">Ver Detalles</button>
+				          </td>
+				        </tr>
+				      `;
+				    });
+				
+				    contenido += `
+				        <tr class="table-info fw-bold">
+				          <td colspan="4" class="text-end">Subtotal</td>
+				          <td class="text-end">${formatoGs(subtotalMonto)}</td>
+				          <td class="ocultar-en-movil"></td>
+				          <td class="ocultar-en-movil text-end">${formatoGs(subtotalReintegro)}</td>
+				          <td class="text-end">${formatoGs(subtotalFinal)}</td>
+				          <td colspan="4"></td>
+				        </tr>
+				      </tbody>
+				    `;
+				  }
+				
+				  // Promedio general de descuento
+				  const promedioDescuentoGeneral = contadorDescuentosGeneral
+				    ? (sumaDescuentosGeneral / contadorDescuentosGeneral)
+				    : 0;
+				
+				  contenido += `
+				    <tfoot>
+				      <tr class="table-warning fw-bold">
+				        <td colspan="4" class="text-end">TOTAL GENERAL</td>
+				        <td class="text-end">${formatoGs(totalMonto)}</td>
+				        <td class="ocultar-en-movil text-center">${promedioDescuentoGeneral.toFixed(2)}%</td>
+				        <td class="ocultar-en-movil text-end">${formatoGs(totalReintegro)}</td>
+				        <td class="text-end">${formatoGs(totalFinal)}</td>
+				        <td colspan="4"></td>
+				      </tr>
+				    </tfoot>
+				  `;
+				
+				  tabla.innerHTML = contenido;
+				
+				  actualizarResumen(filtrados);
+				
+				  if (focoIndex !== null) {
+				    const row = document.getElementById(`gasto-${focoIndex}`);
+				    if (row) {
+				      row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+				      row.classList.add('table-success');
+				      setTimeout(() => row.classList.remove('table-success'), 2000);
+				    }
+				  }
+				}
 				
 				document.addEventListener('DOMContentLoaded', () => {
 				  const inputFecha = document.getElementById('fecha');
@@ -529,7 +571,9 @@
 				  }
 				}
 				
-				mostrarGastos();	
+				mostrarGastos();
+				
+		
 	</script>
 	<footer class="footer-fijo">© JO|2025</footer>
 </body>
