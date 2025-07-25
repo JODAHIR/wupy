@@ -421,58 +421,70 @@
 					}
 				
 				
-				    function actualizarResumen(lista = gastos) {
-				      const resumen = document.getElementById("resumen");
-				      const totales = {};
-				      lista.forEach(g => {
-				        if (!totales[g.categoria]) totales[g.categoria] = 0;
-				        totales[g.categoria] += g.monto;
-				      });
-				      Object.keys(totales).forEach(cat => {
-				        if (!presupuestos[cat]) presupuestos[cat] = 1000000;
-				      });
-				       
-				       
-				      const colores = {
-				        combustible: "#f44336",
-				        supermercado: "#2196F3",
-				        comida: "#FFC107",
-				        fiesta: "#d45087",
-				        ocio: "#FF9800",
-				        tienda: "#2f4b7c",
-				        otros: "#607D8B",
-				        monchis: "#800080",
-				        biggie: "#800000"
-				      };
-				      const iconos = {
-				        combustible: "⛽",
-				        supermercado: "🛒",
-				        comida: "🍽️",
-				        fiesta: "🎉",
-				        ocio: "🎟️",
-				        tienda: "🛍️",
-				        otros: "💊",
-				        monchis: "🏍️",
-				        biggie: "🅱️"
-				      };
-				
-				      resumen.innerHTML = Object.keys(totales).map(cat => {
-				        const usado = totales[cat];
-				        const asignado = presupuestos[cat];
-				        const restante = asignado - usado;
-				        return `
-				          <div class="col-12 col-md-6 col-lg-4 mb-3">
-				            <div class="border rounded p-3" style="background-color: ${colores[cat] || '#999'}10; border-color: ${colores[cat] || '#999'}">
-				              <h6 style="color: ${colores[cat] || '#999'}">${iconos[cat] || "📦"} ${cat}</h6>
-				              <div>🪙 Asignado: <b>${formatoGs(asignado)}</b></div>
-				              <div>⛔ Usado: <b>${formatoGs(usado)}</b></div>
-				              <div>⚠️ Saldo: <b style="color: ${restante < 0 ? 'red' : 'green'}">${formatoGs(restante)}</b></div>
-				            </div>
-				          </div>`;
-				      }).join("");
-				
-				      graficar(totales);
-				    }
+function actualizarResumen(lista = gastos) {
+  const resumen = document.getElementById("resumen");
+  const totales = {};
+  const totalesVisibles = {}; // gastos que sí afectan el presupuesto (solo UENO)
+
+  lista.forEach(g => {
+    if (!totales[g.categoria]) totales[g.categoria] = 0;
+    if (!totalesVisibles[g.categoria]) totalesVisibles[g.categoria] = 0;
+
+    totales[g.categoria] += g.monto; // Total general (para gráfica y resumen)
+    
+    // CAMBIO: Solo UENO afecta saldo disponible
+    if (g.entidad?.trim().toUpperCase() === "UENO") {
+      totalesVisibles[g.categoria] += g.monto;
+    }
+  });
+
+  Object.keys(totales).forEach(cat => {
+    if (!presupuestos[cat]) presupuestos[cat] = 1000000;
+  });
+
+  const colores = {
+    combustible: "#f44336",
+    supermercado: "#2196F3",
+    comida: "#FFC107",
+    fiesta: "#d45087",
+    ocio: "#FF9800",
+    tienda: "#2f4b7c",
+    otros: "#607D8B",
+    monchis: "#800080",
+    biggie: "#800000"
+  };
+  const iconos = {
+    combustible: "⛽",
+    supermercado: "🛒",
+    comida: "🍽️",
+    fiesta: "🎉",
+    ocio: "🎟️",
+    tienda: "🛍️",
+    otros: "💊",
+    monchis: "🏍️",
+    biggie: "🅱️"
+  };
+
+  resumen.innerHTML = Object.keys(totales).map(cat => {
+    const usadoTotal = totales[cat];             // todos los gastos
+    const usadoUENO = totalesVisibles[cat];      // solo UENO
+    const asignado = presupuestos[cat];
+    const restante = asignado - usadoUENO;
+
+    return `
+      <div class="col-12 col-md-6 col-lg-4 mb-3">
+        <div class="border rounded p-3" style="background-color: ${colores[cat] || '#999'}10; border-color: ${colores[cat] || '#999'}">
+          <h6 style="color: ${colores[cat] || '#999'}">${iconos[cat] || "📦"} ${cat}</h6>
+          <div>🪙 Asignado: <b>${formatoGs(asignado)}</b></div>
+          <div>⛔ Usado (UENO): <b>${formatoGs(usadoUENO)}</b></div>
+          <div>⚠️ Saldo (UENO): <b style="color: ${restante < 0 ? 'red' : 'green'}">${formatoGs(restante)}</b></div>
+                    <div>📊 Total Gastado: <b>${formatoGs(usadoTotal)}</b></div>
+        </div>
+      </div>`;
+  }).join("");
+
+  graficar(totales); // mantenemos la gráfica completa
+}
 				    
 				    function toggleDetalles() {
 				      const columnas = document.querySelectorAll('.ocultar-en-movil');
