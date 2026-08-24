@@ -1,592 +1,734 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<meta content="WUPY" name="description">
-	<title>WUPY-JO</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>CAH | OFICINA CENTRAL</title>
+
+<meta name="description" content="Presentación oficial de la nueva equipación CAH OC 2026">
+<meta name="theme-color" content="#4f7157">
+
+<meta property="og:title" content="CAH OC | 2026">
+<meta property="og:description" content="Presentación oficial de la nueva equipación CAH OC 2026">
+<meta property="og:image" content="assets/img/uniforme-cah.png">
+<meta property="og:type" content="website">
+
 	<meta name="author" content="JCODAHIR">
 	<link href="favicon.ico" rel="icon">
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-	<style>
-		.ocultar-en-movil {
-				    display: none;
-				  }
-				  @media (min-width: 768px) {
-				    .ocultar-en-movil {
-				      display: table-cell;
-				    }
-				  }
-				    .footer-fijo {
-				    padding-top: 20px;
-				    margin-top:25px;
-				    bottom: 0;
-				    left: 0;
-				    width: 100%;
-				    height: 10px;
-				    background-color: #28a745; /* Cambiá este color por el que quieras */
-				    z-index: 9999;
-				  }
-				  .cabecera{
-				      position: fixed;
-				  }
-		
-	</style>
-</head>
-<body class="bg-light">
-	<header class="bg-success text-white text-center py-3 mb-3 shadow-sm">
-		<h3>📊 Gastos WUPY's - <span id="mesActual"></span></h3>
-	</header>
-	<div class="container">
-		<!-- Formulario de Gasto -->
-		<form id="formGasto" class="card shadow-sm mb-4" onsubmit="agregarGasto(); return false;">
-			<div class="card-body">
-				<div class="mb-3 row">
-					<div class="col-6">
-						<label class="form-label">📂 Categoría</label>
-						<select id="categoria" class="form-select" required>
-					    <option value="combustible">⛽️ Combustible</option>
-					    <option value="supermercado">🛒 Supermercado</option>
-					    <option value="comida">🍽️ Comida</option>
-					    <option value="fiesta">🎉 Fiesta</option>
-					    <option value="ocio">🎟️ Entradas</option>
-					    <option value="tienda">🛍️ Tienda</option>
-					    <option value="otros">💊 Farmacia</option>
-					    <option value="monchis">🏍️ Monchis</option>
-					    <option value="biggie">🅱️ Biggie</option>
-				        </select>
-					</div>
 
-					<div class="col-6">
-						<label class="form-label">🏦 Banco</label>
-						<input type="text" id="entidad" class="form-control" required>
-					</div>
-				</div>
-				<div class="mb-3 row">
-					<div class="col-6">
-						<label class="form-label">📍 Lugar</label>
-						<input type="text" id="lugar" class="form-control" required>
-					</div>
-					<div class="col-6">
-						<label class="form-label">🗓️ Fecha</label>
-						<input type="date" id="fecha" class="form-control" required>
-					</div>
-				</div>
-				<div class="mb-3 row">
-					<div class="col-6">
-						<label class="form-label">💸 Monto (Gs)</label>
-						<input type="text" id="monto" class="form-control" required>
-					</div>
-					<div class="col-6">
-						<label class="form-label">🔙 Descuento </label>
-						<input type="text" id="descuento" class="form-control">
-					</div>
-				</div>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://unpkg.com/aos@next/dist/aos.css" rel="stylesheet">
 
-				<div class="mb-3">
-					<label class="form-label">📝 Nota</label>
-					<textarea id="nota" class="form-control" rows="2"></textarea>
-				</div>
-				<div class="row g-2 mb-3">
-					<div class="col-12 col-sm-6">
-						<button type="submit" class="btn btn-success">💾 Agregar</button>
-						<button type="button" class="btn btn-outline-danger" onclick="resetearGastos()">🧹 Resetear Mes</button>
-					</div>
-				</div>
-			</div>
-		</form>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-		<div class="mb-4">
-			<h5>📥​ Importar 📤 Exportar</h5>
-			<div class="d-flex flex-column flex-sm-row gap-2">
-				<input type="file" class="form-control w-100" id="inputCSV" accept=".csv">
-				<button class="btn btn-outline-primary w-100" onclick="exportarCSV()">📤 Seleccionar archivo</button>
-			</div>
-		</div>
-		<hr>
-		<h5>🗂️Resumen Gastos</h5>
-		<div class="row" id="resumen"></div>
-		<div class="table-responsive mt-4">
-			<div class="row g-2 mb-3">
-				<div class="col-12 col-sm-6">
-					<input type="text" id="filtroTexto" class="form-control" placeholder="🔍 Buscar" oninput="mostrarGastos()">
-				</div>
-				<div class="col-12 col-sm-6">
-					<select id="filtroCategoria" class="form-select" onchange="mostrarGastos()">
-					  <option value="">📂 Categorías</option>
-					  <option value="combustible">⛽️ Combustible</option>
-					  <option value="supermercado">🛒 Supermercado</option>
-					  <option value="comida">🍽️ Comida</option>
-					  <option value="fiesta">🎉 Fiesta</option>
-					  <option value="ocio">🎟️ Entradas</option>
-					  <option value="tienda">🛍️ Tienda</option>
-					  <option value="otros">💊 Farmacia</option>
-					  <option value="monchis">🏍️ Monchis</option>
-					  <option value="biggie">🅱️ Biggie</option>
-					</select>
-				</div>
-			</div>
-			<hr>
-			<h5> 📑 Detalle Gastos</h5>
-			<table class="table table-bordered table-hover" id="tablaGastos"></table>
-		</div>
-		<div class="chart my-4 text-center">
-			<canvas id="graficoGastos" height="300"></canvas>
-		</div>
-	</div>
-	<script>
-		const gastos = JSON.parse(localStorage.getItem('gastos')) || [];
-				    const presupuestos = JSON.parse(localStorage.getItem('presupuestos')) || {
-				      combustible: 1000000,
-				      supermercado: 1000000,
-				      comida: 1000000,
-				      fiesta: 1000000,
-				      ocio: 1000000,
-				      tienda: 1000000,
-				      otros: 1000000,
-				      monchis: 400000,
-				      biggie: 1000000
-				    };
-				
-				    document.getElementById('fecha').valueAsDate = new Date();
-				    document.getElementById('monto').addEventListener('input', function() {
-				      formatearMilesInput(this);
-				    });
-				    
-				    document.getElementById('descuento').addEventListener('input', function() {
-				      formatearMilesInput(this);
-				    });
-				    document.getElementById('mesActual').innerText = new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
-				    let indiceEdicion = null;
-				
-				    function formatearMilesInput(input) {
-				      let valor = input.value.replace(/\D/g, '');
-				      if (!valor) {
-				        input.value = '';
-				        return;
-				      }
-				      input.value = parseInt(valor, 10).toLocaleString('es-PY');
-				    }
-				        
-				    function agregarGasto() {
-				      const categoria = document.getElementById('categoria').value;
-				      const entidad = document.getElementById('entidad').value.trim();
-				      const lugar = document.getElementById('lugar').value.trim();
-				      const monto = parseFloat(document.getElementById('monto').value.replace(/\./g, '').replace(/,/g, '.'));
-				      const descuento = parseFloat(document.getElementById('descuento').value.replace(/\./g, '').replace(/,/g, '.')) || 0;
-				      const fecha = document.getElementById('fecha').value;
-				      const nota = document.getElementById('nota').value;
-				      const final = monto * (1 - descuento / 100);
-				    
-				      if (!monto || monto <= 0 || !fecha || !categoria || !lugar) return;
-				    
-				      const gasto = { categoria, entidad, lugar, monto, descuento, fecha, nota, final };
-				    
-				      if (indiceEdicion !== null) {
-				        gastos[indiceEdicion] = gasto;
-				        indiceEdicion = null;
-				      } else {
-				        gastos.push(gasto);
-				      }
-				    
-				      localStorage.setItem('gastos', JSON.stringify(gastos));
-				    
-				      document.getElementById('formGasto').reset();
-				      document.getElementById('fecha').valueAsDate = new Date();
-				      document.getElementById('categoria').focus();
-				    
-				      mostrarGastos(gastos.length - 1);
-				    }
-				    
-				    function formatoGs(n) {
-				      return parseFloat(n).toLocaleString('es-PY', { style: 'currency', currency: 'PYG', minimumFractionDigits: 0 });
-				    }
-				    
-				function mostrarGastos(focoIndex = null) {
-				  // Función parseFecha igual que antes...
-				  function parseFechaDDMMYYYY(fechaStr) {
-				    if (!fechaStr) return null;
-				    const partes = fechaStr.split('/');
-				    if (partes.length !== 3) return null;
-				    const [dd, mm, yyyy] = partes;
-				    return new Date(+yyyy, +mm - 1, +dd);
-				  }
-				
-				  const texto = document.getElementById('filtroTexto')?.value.toLowerCase() || '';
-				  const filtro = document.getElementById('filtroCategoria')?.value || '';
-				  const tabla = document.getElementById('tablaGastos');
-				
-				  const filtrados = gastos.filter(g =>
-				    (!filtro || g.categoria === filtro) &&
-				    (g.lugar?.toLowerCase().includes(texto) || (g.nota || '').toLowerCase().includes(texto))
-				  );
-				
-				  if (!filtrados.length) {
-				    tabla.innerHTML = `
-				      <thead>
-				        <tr><th colspan="13" class="text-center">Sin datos</th></tr>
-				      </thead>
-				    `;
-				    actualizarResumen([]);
-				    return;
-				  }
-				
-				  // Agrupar por entidad
-				  const entidades = {};
-				  filtrados.forEach(g => {
-				    const key = g.entidad?.trim() || "Sin banco";
-				    if (!entidades[key]) entidades[key] = [];
-				    entidades[key].push(g);
-				  });
-				
-				  let contenido = '';
-				  let totalMonto = 0;
-				  let totalReintegro = 0;
-				  let totalFinal = 0;
-				
-				  // Para calcular promedio general de descuento
-				  let sumaDescuentosGeneral = 0;
-				  let contadorDescuentosGeneral = 0;
-				
-				  for (const entidad in entidades) {
-				    const grupo = entidades[entidad];
-				
-				    // Fechas (igual que antes)
-				    let fechas = grupo
-				      .map(g => parseFechaDDMMYYYY(g.fecha))
-				      .filter(d => d instanceof Date && !isNaN(d));
-				    if (fechas.length === 0) {
-				      fechas = grupo
-				        .map(g => new Date(g.fecha))
-				        .filter(d => d instanceof Date && !isNaN(d));
-				    }
-				    const fechaMax = fechas.length ? new Date(Math.max(...fechas)) : null;
-				    const fechaFormateada = fechaMax
-				      ? fechaMax.toLocaleDateString('es-PY', { day: '2-digit', month: '2-digit', year: 'numeric' })
-				      : '';
-				
-				    // Calcular promedio descuento de la entidad
-				    const sumaDescuentosEntidad = grupo.reduce((acc, g) => acc + (g.descuento || 0), 0);
-				    const promedioDescuentoEntidad = grupo.length ? (sumaDescuentosEntidad / grupo.length) : 0;
-				
-				    // Acumular para promedio general
-				    sumaDescuentosGeneral += sumaDescuentosEntidad;
-				    contadorDescuentosGeneral += grupo.length;
-				
-				    let subtotalMonto = 0;
-				    let subtotalReintegro = 0;
-				    let subtotalFinal = 0;
-				
-				    contenido += `
-				      <thead class="table-success">
-				        <tr>
-				          <th colspan="13" class="text-start">
-				            🏦 Banco: ${entidad} &nbsp;&nbsp; 📅 Último gasto: ${fechaFormateada} &nbsp;&nbsp; 🏷️ Promedio Descuento: ${promedioDescuentoEntidad.toFixed(2)}%
-				          </th>
-				        </tr>
-				        <tr>
-				          <th class="text-center">Fecha</th>
-				          <th class="ocultar-en-movil">Categoría</th>
-				          <th class="text-center">Banco</th>
-				          <th class="text-center">Lugar</th>
-				          <th class="text-center">Monto</th>
-				          <th class="ocultar-en-movil text-center">Des (%)</th>
-				          <th class="ocultar-en-movil text-center">Reintegro (Gs)</th>
-				          <th class="text-center">Total</th>
-				          <th class="ocultar-en-movil text-center">Nota</th>
-				          <th class="text-center">✏️</th>
-				          <th class="text-center">🆑</th>
-				          <th class="text-center">🔽</th>
-				        </tr>
-				      </thead>
-				      <tbody>
-				    `;
-				
-				    grupo.forEach(g => {
-				      const index = gastos.indexOf(g);
-				      const rowId = `gasto-${index}`;
-				      const reintegro = (g.monto || 0) * (g.descuento || 0) / 100;
-				
-				      subtotalMonto += g.monto || 0;
-				      subtotalReintegro += reintegro;
-				      subtotalFinal += g.final || 0;
-				
-				      totalMonto += g.monto || 0;
-				      totalReintegro += reintegro;
-				      totalFinal += g.final || 0;
-				
-				      contenido += `
-				        <tr id="${rowId}">
-				          <td class="text-center">${g.fecha}</td>
-				          <td class="ocultar-en-movil">${g.categoria}</td>
-				          <td class="text-center">${g.entidad || ''}</td>
-				          <td class="text-center">${g.lugar}</td>
-				          <td class="text-end">${formatoGs(g.monto)}</td>
-				          <td class="ocultar-en-movil text-center">${g.descuento || 0}%</td>
-				          <td class="ocultar-en-movil text-end">${formatoGs(reintegro)}</td>
-				          <td class="text-end">${formatoGs(g.final)}</td>
-				          <td class="ocultar-en-movil">${g.nota || ''}</td>
-				          <td class="text-center">
-				            <button class="btn btn-sm btn-outline-primary" onclick="editarGasto(${index})">✏️</button>
-				          </td>
-				          <td class="text-center">
-				            <button class="btn btn-sm btn-outline-danger" onclick="eliminarGasto(${index})">🗑️</button>
-				          </td>
-				          <td class="text-center">
-				            <button class="btn btn-outline-secondary btn-sm" onclick="toggleDetalles()">Ver Detalles</button>
-				          </td>
-				        </tr>
-				      `;
-				    });
-				
-				    contenido += `
-				        <tr class="table-info fw-bold">
-				          <td colspan="4" class="text-end">Subtotal</td>
-				          <td class="text-end">${formatoGs(subtotalMonto)}</td>
-				          <td class="ocultar-en-movil"></td>
-				          <td class="ocultar-en-movil text-end">${formatoGs(subtotalReintegro)}</td>
-				          <td class="text-end">${formatoGs(subtotalFinal)}</td>
-				          <td colspan="4"></td>
-				        </tr>
-				      </tbody>
-				    `;
-				  }
-				
-				  // Promedio general de descuento
-				  const promedioDescuentoGeneral = contadorDescuentosGeneral
-				    ? (sumaDescuentosGeneral / contadorDescuentosGeneral)
-				    : 0;
-				
-				  contenido += `
-				    <tfoot>
-				      <tr class="table-warning fw-bold">
-				        <td colspan="4" class="text-end">TOTAL GENERAL</td>
-				        <td class="text-end">${formatoGs(totalMonto)}</td>
-				        <td class="ocultar-en-movil text-center">${promedioDescuentoGeneral.toFixed(2)}%</td>
-				        <td class="ocultar-en-movil text-end">${formatoGs(totalReintegro)}</td>
-				        <td class="text-end">${formatoGs(totalFinal)}</td>
-				        <td colspan="4"></td>
-				      </tr>
-				    </tfoot>
-				  `;
-				
-				  tabla.innerHTML = contenido;
-				
-				  actualizarResumen(filtrados);
-				
-				  if (focoIndex !== null) {
-				    const row = document.getElementById(`gasto-${focoIndex}`);
-				    if (row) {
-				      row.scrollIntoView({ behavior: 'smooth', block: 'center' });
-				      row.classList.add('table-success');
-				      setTimeout(() => row.classList.remove('table-success'), 2000);
-				    }
-				  }
-				}
-				
-				document.addEventListener('DOMContentLoaded', () => {
-				  const inputFecha = document.getElementById('fecha');
-				  const hoy = new Date();
-				  const yyyy = hoy.getFullYear();
-				  const mm = String(hoy.getMonth() + 1).padStart(2, '0');
-				  const dd = String(hoy.getDate()).padStart(2, '0');
-				  inputFecha.value = `${yyyy}-${mm}-${dd}`;
-				});
-				
-				
-				    function eliminarGasto(index) {
-				      if (confirm('¿Eliminar el gasto?')) {
-					gastos.splice(index, 1);
-					localStorage.setItem('gastos', JSON.stringify(gastos));
-					mostrarGastos();
-				      }
-				    }
-				    
-					function editarGasto(index) {
-					  const g = gastos[index];
-					  indiceEdicion = index;
-		
-					  document.getElementById('categoria').value = g.categoria;
-					  document.getElementById('entidad').value = g.entidad;
-					  document.getElementById('lugar').value = g.lugar;
-					  document.getElementById('monto').value = Math.round(g.monto).toLocaleString('es-PY');
-					  document.getElementById('descuento').value = Math.round(g.descuento).toLocaleString('es-PY');
-					  document.getElementById('fecha').value = g.fecha;
-					  document.getElementById('nota').value = g.nota;
-		
-					  setTimeout(() => {
-					    document.getElementById('lugar').focus();
-					  }, 50);
-					}
-				
-				
-function actualizarResumen(lista = gastos) {
-  const resumen = document.getElementById("resumen");
-  const totales = {};
-  const totalesVisibles = {}; // gastos que sí afectan el presupuesto (solo UENO)
+<style>
 
-  lista.forEach(g => {
-    if (!totales[g.categoria]) totales[g.categoria] = 0;
-    if (!totalesVisibles[g.categoria]) totalesVisibles[g.categoria] = 0;
-
-    totales[g.categoria] += g.monto; // Total general (para gráfica y resumen)
-    
-    // CAMBIO: Solo UENO afecta saldo disponible
-    if (g.entidad?.trim().toUpperCase() === "UENO") {
-      totalesVisibles[g.categoria] += g.monto;
-    }
-  });
-
-  Object.keys(totales).forEach(cat => {
-    if (!presupuestos[cat]) presupuestos[cat] = 1000000;
-  });
-
-  const colores = {
-    combustible: "#f44336",
-    supermercado: "#2196F3",
-    comida: "#FFC107",
-    fiesta: "#d45087",
-    ocio: "#FF9800",
-    tienda: "#2f4b7c",
-    otros: "#607D8B",
-    monchis: "#800080",
-    biggie: "#800000"
-  };
-  const iconos = {
-    combustible: "⛽",
-    supermercado: "🛒",
-    comida: "🍽️",
-    fiesta: "🎉",
-    ocio: "🎟️",
-    tienda: "🛍️",
-    otros: "💊",
-    monchis: "🏍️",
-    biggie: "🅱️"
-  };
-
-  resumen.innerHTML = Object.keys(totales).map(cat => {
-    const usadoTotal = totales[cat];             // todos los gastos
-    const usadoUENO = totalesVisibles[cat];      // solo UENO
-    const asignado = presupuestos[cat];
-    const restante = asignado - usadoUENO;
-
-    return `
-      <div class="col-12 col-md-6 col-lg-4 mb-3">
-        <div class="border rounded p-3" style="background-color: ${colores[cat] || '#999'}10; border-color: ${colores[cat] || '#999'}">
-          <h6 style="color: ${colores[cat] || '#999'}">${iconos[cat] || "📦"} ${cat}</h6>
-          <div>🪙 Asignado: <b>${formatoGs(asignado)}</b></div>
-          <div>⛔ Usado (UENO): <b>${formatoGs(usadoUENO)}</b></div>
-          <div>⚠️ Saldo (UENO): <b style="color: ${restante < 0 ? 'red' : 'green'}">${formatoGs(restante)}</b></div>
-                    <div>📊 Total Gastado: <b>${formatoGs(usadoTotal)}</b></div>
-        </div>
-      </div>`;
-  }).join("");
-
-  graficar(totales); // mantenemos la gráfica completa
+:root{
+    --cah-green:#4f7157;
+    --cah-dark:#050505;
+    --cah-light:#f5f7f8;
 }
-				    
-				    function toggleDetalles() {
-				      const columnas = document.querySelectorAll('.ocultar-en-movil');
-				      columnas.forEach(col => {
-				        col.style.display = (col.style.display === 'none' || col.style.display === '') ? 'table-cell' : 'none';
-				      });
-				    }
-				    
-				    function graficar(totales) {
-				      const ctx = document.getElementById('graficoGastos').getContext('2d');
-				      const categorias = Object.keys(totales);
-				      const datos = Object.values(totales);
-				      const colores = categorias.map(cat => ({
-				        combustible: "#f44336", supermercado: "#2196F3", comida: "#FFC107", fiesta: "#d45087",
-				        ocio: "#FF9800", tienda: "#2f4b7c", otros: "#607D8B", monchis: "#800080", biggie: "#800000"
-				      }[cat] || "#999"));
-				
-				      if (window.chart) window.chart.destroy();
-				      window.chart = new Chart(ctx, {
-				        type: 'bar',
-				        data: {
-				          labels: categorias,
-				          datasets: [{
-				            data: datos,
-				            backgroundColor: colores
-				          }]
-				        },
-				        options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
-				      });
-				    }
-				
-				function exportarCSV() {
-				  const rows = [
-				    ["Lugar","Categoría","Banco","Fecha","Monto","Descuento","Total"],
-				    ...gastos.map(g => [
-				      g.lugar,
-				      g.categoria,
-				      g.entidad,
-				      g.fecha,
-				      Math.round(g.monto),      
-				      Math.round(g.descuento),  
-				      Math.round(g.final)       
-				    ])
-				  ];
-				  
-				  const csv = rows.map(r => r.join(",")).join("\n");
-				  const blob = new Blob([csv], { type: "text/csv" });
-				  const url = URL.createObjectURL(blob);
-				  const a = document.createElement("a");
-				  a.href = url;
-				  a.download = "gastos.csv";
-				  a.click();
-				  URL.revokeObjectURL(url);
-				}
-				
-				document.getElementById("inputCSV").addEventListener("change", function(e) {
-				  const file = e.target.files[0];
-				  if (!file) return;
-				
-				  const reader = new FileReader();
-				  reader.onload = function(event) {
-				    const lines = event.target.result.trim().split("\n").slice(1); 
-				    lines.forEach(line => {
-				      const [lugar, categoria, entidad, fecha, montoStr, descuentoStr, totalStr] = line.split(",");
-				
-				      const monto = parseFloat(montoStr?.replace(/\./g, '').replace(',', '.')) || 0;
-				      const descuento = parseFloat(descuentoStr?.replace(/\./g, '').replace(',', '.')) || 0;
-				      const final = parseFloat(totalStr?.replace(/\./g, '').replace(',', '.')) || 0;
-				
-				      if (lugar && categoria && fecha) {
-				        gastos.push({
-				          lugar: lugar.trim(),
-				          categoria: categoria.trim(),
-				          entidad: entidad?.trim() || '',
-				          fecha: fecha.trim(),
-				          monto,
-				          descuento,
-				          final,
-				          nota: "Importado"
-				        });
-				      }
-				    });
-				
-				    localStorage.setItem("gastos", JSON.stringify(gastos));
-				    mostrarGastos();
-				  };
-				
-				  reader.readAsText(file);
-				});
-				
-				function resetearGastos() {
-				  if (confirm("¿Estás seguro de que querés borrar todos los gastos del mes?")) {
-				    localStorage.removeItem('gastos');
-				    gastos.length = 0;
-				    mostrarGastos();
-				  }
-				}
-				
-				mostrarGastos();
-				
-		
-	</script>
-	<footer class="footer-fijo">© JO|2025</footer>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    font-family:'Montserrat',sans-serif;
+    background:#f4f6f8;
+    overflow-x:hidden;
+    color:#222;
+}
+
+/* =========================
+   NAVBAR
+========================= */
+
+.navbar{
+    transition:.4s;
+    padding:15px 0;
+}
+
+.navbar-scrolled{
+    background:rgba(0,0,0,.95);
+    backdrop-filter:blur(12px);
+    box-shadow:0 5px 25px rgba(0,0,0,.25);
+}
+
+.logo{
+    width:60px;
+}
+
+.nav-link{
+    color:#fff !important;
+    font-weight:500;
+    margin-left:15px;
+}
+
+.nav-link:hover{
+    color:var(--cah-green) !important;
+}
+
+/* =========================
+   HERO
+========================= */
+
+.hero{
+    min-height:100vh;
+    background:
+    linear-gradient(
+        135deg,
+        #000 0%,
+        #121212 50%,
+        #4f7157 100%
+    );
+    color:white;
+    display:flex;
+    align-items:center;
+    position:relative;
+}
+
+.hero::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+    radial-gradient(circle at center,
+    rgba(255,255,255,.05),
+    transparent 60%);
+}
+
+.hero-content{
+    position:relative;
+    z-index:2;
+}
+
+.hero h1{
+    font-size:4rem;
+    font-weight:800;
+    line-height:1.1;
+}
+
+.hero p{
+    font-size:1.2rem;
+    opacity:.9;
+}
+
+.hero-image{
+    max-width:100%;
+    animation:float 5s ease-in-out infinite;
+}
+
+@keyframes float{
+
+0%{
+transform:translateY(0);
+}
+
+50%{
+transform:translateY(-15px);
+}
+
+100%{
+transform:translateY(0);
+}
+
+}
+
+.btn-cah{
+    background:var(--cah-green);
+    border:none;
+    padding:14px 35px;
+    border-radius:50px;
+    color:white;
+    font-weight:600;
+    transition:.3s;
+}
+
+.btn-cah:hover{
+    background:#3f5d47;
+    transform:translateY(-2px);
+}
+
+/* =========================
+   SECTION
+========================= */
+
+section{
+    padding:100px 0;
+}
+
+.section-title{
+    font-size:2.7rem;
+    font-weight:800;
+    margin-bottom:20px;
+}
+
+/* =========================
+   CONCEPTO
+========================= */
+
+.concepto{
+    background:white;
+}
+
+/* =========================
+   FEATURES
+========================= */
+
+.feature-card{
+    background:white;
+    padding:35px;
+    border-radius:24px;
+    box-shadow:0 15px 40px rgba(0,0,0,.08);
+    transition:.4s;
+    height:100%;
+}
+
+.feature-card:hover{
+    transform:translateY(-10px);
+}
+
+.feature-icon{
+    font-size:3rem;
+    margin-bottom:15px;
+}
+
+/* =========================
+   PALETA
+========================= */
+
+.palette{
+    width:140px;
+    height:140px;
+    border-radius:24px;
+    margin:auto;
+    box-shadow:0 10px 30px rgba(0,0,0,.15);
+}
+
+.black{
+    background:#000;
+}
+
+.green{
+    background:#4f7157;
+}
+
+.white{
+    background:white;
+    border:1px solid #ddd;
+}
+
+/* =========================
+   GALERIA
+========================= */
+
+.gallery{
+    background:white;
+}
+
+.gallery-image{
+    cursor:pointer;
+    transition:.4s;
+    border-radius:25px;
+}
+
+.gallery-image:hover{
+    transform:scale(1.02);
+}
+
+/* =========================
+   CTA
+========================= */
+
+.cta{
+    background:
+    linear-gradient(
+    rgba(0,0,0,.85),
+    rgba(0,0,0,.85)),
+    url('assets/img/uniforme-cah.png');
+
+    background-size:cover;
+    background-position:center;
+    color:white;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+footer{
+    background:#000;
+    color:white;
+    padding:30px 0;
+}
+
+/* =========================
+   ACCESSIBILITY
+========================= */
+
+:focus-visible{
+    outline:3px solid #4f7157;
+    outline-offset:4px;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:991px){
+
+.hero{
+    text-align:center;
+    padding-top:120px;
+}
+
+.hero h1{
+    font-size:3rem;
+}
+
+}
+
+@media(max-width:768px){
+
+.hero h1{
+    font-size:2.2rem;
+}
+
+.section-title{
+    font-size:2rem;
+}
+
+.palette{
+    width:110px;
+    height:110px;
+}
+
+}
+
+/* =========================
+   REDUCED MOTION
+========================= */
+
+@media(prefers-reduced-motion:reduce){
+
+html{
+scroll-behavior:auto;
+}
+
+*{
+animation:none !important;
+transition:none !important;
+}
+
+}
+
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+
+<nav class="navbar navbar-expand-lg fixed-top">
+
+<div class="container">
+
+<a class="navbar-brand text-white fw-bold" href="#">
+
+<img
+src="logo.png"
+class="logo me-2"
+alt="Escudo Oficial CAH">
+
+CAH OC
+
+</a>
+
+<button
+class="navbar-toggler bg-light"
+type="button"
+data-bs-toggle="collapse"
+data-bs-target="#menu">
+
+<span class="navbar-toggler-icon"></span>
+
+</button>
+
+<div class="collapse navbar-collapse" id="menu">
+
+<ul class="navbar-nav ms-auto">
+
+<li class="nav-item">
+<a class="nav-link" href="#concepto">Concepto</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link" href="#caracteristicas">Características</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link" href="#paleta">Paleta</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link" href="#galeria">Galería</a>
+</li>
+
+</ul>
+
+</div>
+
+</div>
+
+</nav>
+
+<!-- HERO -->
+
+<section class="hero">
+
+<div class="container">
+
+<div class="row align-items-center hero-content">
+
+<div class="col-lg-6" data-aos="fade-right">
+
+<h1>
+Equipación Oficial
+CAH OFICINA CENTRAL 2026
+</h1>
+
+<p class="my-4">
+
+Elegancia, identidad institucional y rendimiento
+reunidos en una propuesta moderna para representar
+a la Institución dentro y fuera del campo de juego.
+
+</p>
+
+<a href="#galeria" class="btn btn-cah">
+Ver Equipación
+</a>
+
+</div>
+
+<div class="col-lg-6 text-center" data-aos="fade-left">
+
+<img
+src="oc_2026.png"
+class="hero-image img-fluid"
+alt="Equipación Oficial CAH">
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- CONCEPTO -->
+
+<section id="concepto" class="concepto">
+
+<div class="container">
+
+<div class="row justify-content-center">
+
+<div class="col-lg-8 text-center" data-aos="fade-up">
+
+<h2 class="section-title">
+Concepto del Diseño
+</h2>
+
+<p class="lead">
+
+La equipación CAH 2026 fusiona elegancia,
+tradición e innovación.
+
+Las franjas horizontales transmiten estabilidad,
+fortaleza y trabajo en equipo.
+
+El verde institucional simboliza crecimiento,
+esperanza y compromiso con los valores del club.
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- CARACTERISTICAS -->
+
+<section id="caracteristicas">
+
+<div class="container">
+
+<div class="text-center mb-5">
+
+<h2 class="section-title">
+Características del Diseño
+</h2>
+
+</div>
+
+<div class="row g-4">
+
+<div class="col-md-4">
+
+<div class="feature-card" data-aos="fade-up">
+
+<div class="feature-icon">⚽</div>
+
+<h4>Diseño Profesional</h4>
+
+<p>
+Inspirado en tendencias actuales del fútbol internacional.
+</p>
+
+</div>
+
+</div>
+
+<div class="col-md-4">
+
+<div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+
+<div class="feature-icon">🛡️</div>
+
+<h4>Identidad Institucional</h4>
+
+<p>
+Escudo y colores integrados armoniosamente.
+</p>
+
+</div>
+
+</div>
+
+<div class="col-md-4">
+
+<div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+
+<div class="feature-icon">🔥</div>
+
+<h4>Alto Impacto Visual</h4>
+
+<p>
+Preparada para torneos, eventos y representación oficial.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- PALETA -->
+
+<section id="paleta" class="bg-white">
+
+<div class="container">
+
+<div class="text-center mb-5">
+
+<h2 class="section-title">
+Paleta de Colores
+</h2>
+
+</div>
+
+<div class="row justify-content-center g-4">
+
+<div class="col-md-2 text-center">
+
+<div class="palette black"></div>
+
+<h5 class="mt-3">Negro</h5>
+
+</div>
+
+<div class="col-md-2 text-center">
+
+<div class="palette green"></div>
+
+<h5 class="mt-3">Verde CAH</h5>
+
+</div>
+
+<div class="col-md-2 text-center">
+
+<div class="palette white"></div>
+
+<h5 class="mt-3">Blanco</h5>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- GALERIA -->
+
+<section id="galeria" class="gallery">
+
+<div class="container">
+
+<div class="text-center mb-5">
+
+<h2 class="section-title">
+Equipación 360°
+</h2>
+
+<p>
+Haz clic sobre la imagen para verla en pantalla completa.
+</p>
+
+</div>
+
+<div class="row justify-content-center">
+
+<div class="col-lg-10 text-center">
+
+<img
+src="img_galeria.png"
+class="gallery-image img-fluid shadow-lg"
+alt="Equipación Oficial CAH"
+loading="lazy"
+data-bs-toggle="modal"
+data-bs-target="#uniformModal">
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- CTA -->
+
+<section class="cta text-center">
+
+<div class="container">
+
+<img
+src="logo.png"
+width="120"
+alt="Escudo CAH">
+
+<h2 class="display-4 fw-bold mt-4">
+CAH FC 2026
+</h2>
+
+<p class="lead my-4">
+
+Más que una camiseta, una identidad.
+
+</p>
+
+<a href="#galeria" class="btn btn-cah">
+Explora diseño
+</a>
+
+</div>
+
+</section>
+
+<!-- MODAL -->
+
+<div
+class="modal fade"
+id="uniformModal"
+tabindex="-1"
+aria-hidden="true">
+
+<div class="modal-dialog modal-fullscreen">
+
+<div class="modal-content bg-dark">
+
+<div class="modal-header border-0">
+
+<button
+type="button"
+class="btn-close btn-close-white"
+data-bs-dismiss="modal"
+aria-label="Cerrar imagen">
+</button>
+
+</div>
+
+<div class="modal-body d-flex justify-content-center align-items-center">
+
+<img
+src="assets/img/uniforme-cah.png"
+class="img-fluid"
+alt="Uniforme CAH ampliado">
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- FOOTER -->
+
+<footer>
+
+<div class="container text-center">
+
+<p class="mb-0">
+
+© 2026 CAH OC | <b>JO</b> | Page Oficial
+
+</p>
+
+</div>
+
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+
+<script>
+
+AOS.init({
+duration:800,
+once:true
+});
+
+window.addEventListener("scroll",()=>{
+
+document
+.querySelector(".navbar")
+.classList.toggle(
+"navbar-scrolled",
+window.scrollY > 50
+);
+
+});
+
+</script>
+
 </body>
 </html>
